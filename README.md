@@ -1,4 +1,4 @@
-🚧** This project is under development and expected to go live soon. Currently working on backend and integration.** 🚀
+**🚧 This project is under development and expected to go live soon. Currently working on backend and integration. 🚀**
 
 
 # TechJobs Alert
