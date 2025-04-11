@@ -1,8 +1,7 @@
 'use client';
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import styled from 'styled-components';
 
 // Updated path array for "JoBless"
 const pathArr = [
@@ -15,124 +14,8 @@ const pathArr = [
   'M149.25 45.15Q153.15 46.25 157.90 46.25Q160.20 46.25 161.35 46.10Q162.50 45.95 162.90 45.60Q163.30 45.25 163.30 44.65Q163.30 43.80 162.68 43.60Q162.05 43.40 160.20 43.05L156.25 42.30Q152.45 41.55 150.78 39.92Q149.10 38.30 149.10 35.05Q149.10 30.65 151.73 29.05Q154.35 27.45 160.10 27.45Q163.55 27.45 166.18 27.82Q168.80 28.20 170.55 28.75L170.45 34.80L170.30 34.95Q166.25 33.65 161.45 33.65Q159.10 33.65 158.18 33.97Q157.25 34.30 157.25 35.25Q157.25 35.75 157.53 36.05Q157.80 36.35 158.80 36.63Q159.80 36.90 161.95 37.30L165.60 38Q168.65 38.65 170.10 40.15Q171.55 41.65 171.55 44.90Q171.55 47.75 170.50 49.42Q169.45 51.10 166.98 51.80Q164.50 52.50 160.15 52.50Q156.85 52.50 154.08 52.17Q151.30 51.85 149.10 51.40L149.10 45.25L149.25 45.15Z'
 ];
 
-const StyledWrapper = styled.div`
-  .input-wrapper {
-    width: fit-content;
-    height: 45px;
-    border-radius: 20px;
-    padding: 5px;
-    box-sizing: content-box;
-    display: flex;
-    align-items: center;
-    background-color: #292524;
-  }
-
-  .icon {
-    width: 30px;
-    fill: rgb(255, 255, 255);
-    margin-left: 8px;
-    transition: all 0.3s;
-  }
-  .input {
-    max-width: 170px;
-    height: 100%;
-    border: none;
-    outline: none;
-    padding-left: 15px;
-    background-color: #292524;
-    color: white;
-    font-size: 1em;
-  }
-  .input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px #292524 inset;
-    -webkit-text-fill-color: #ffffff;
-  }
-  .Subscribe-btn {
-    height: 100%;
-    width: 95px;
-    border: none;
-    border-radius: 15px;
-    color: rgb(0, 0, 0);
-    cursor: pointer;
-    background-color: #ffffff;
-    font-weight: 500;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: all 0.3s;
-  }
-  .arrow {
-    position: absolute;
-    margin-right: 150px;
-    transition: all 0.3s;
-  }
-  .input-wrapper:active .icon {
-    transform: scale(1.3);
-  }
-  .Subscribe-btn:hover {
-    color: white;
-  }
-  .Subscribe-btn:hover .arrow {
-    margin-right: 0;
-    animation: jello-vertical 0.9s both;
-    transform-origin: right;
-  }
-
-  @keyframes jello-vertical {
-    0% {
-      transform: scale3d(1, 1, 1);
-    }
-    30% {
-      transform: scale3d(0.75, 1.25, 1);
-    }
-    40% {
-      transform: scale3d(1.25, 0.75, 1);
-    }
-    50% {
-      transform: scale3d(0.85, 1.15, 1);
-    }
-    65% {
-      transform: scale3d(1.05, 0.95, 1);
-    }
-    75% {
-      transform: scale3d(0.95, 1.05, 1);
-    }
-    100% {
-      transform: scale3d(1, 1, 1);
-    }
-  }
-  .Subscribe-btn:active {
-    transform: scale(0.9);
-  }
-`;
-
-const NewsletterInput = () => {
-  return (
-    <StyledWrapper>
-      <div className="input-wrapper">
-        <svg className="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <g data-name="Layer 2">
-            <g data-name="inbox">
-              <rect width={24} height={24} transform="rotate(180 12 12)" opacity={0} />
-              <path d="M20.79 11.34l-3.34-6.68A3 3 0 0 0 14.76 3H9.24a3 3 0 0 0-2.69 1.66l-3.34 6.68a2 2 0 0 0-.21.9V18a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5.76a2 2 0 0 0-.21-.9zM8.34 5.55a1 1 0 0 1 .9-.55h5.52a1 1 0 0 1 .9.55L18.38 11H16a1 1 0 0 0-1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2a1 1 0 0 0-1-1H5.62z" />
-            </g>
-          </g>
-        </svg>
-        <input type="text" name="text" className="input" placeholder="info@gmail.com" />
-        <button className="Subscribe-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width={30} height={10} viewBox="0 0 38 15" className="arrow">
-            <path d="M10 7.519l-.939-.344h0l.939.344zm14.386-1.205l-.981-.192.981.192zm1.276 5.509l.537.843.148-.094.107-.139-.792-.611zm4.819-4.304l-.385-.923h0l.385.923zm7.227.707a1 1 0 0 0 0-1.414L31.343.448a1 1 0 0 0-1.414 0 1 1 0 0 0 0 1.414l5.657 5.657-5.657 5.657a1 1 0 0 0 1.414 1.414l6.364-6.364zM1 7.519l.554.833.029-.019.094-.061.361-.23 1.277-.77c1.054-.609 2.397-1.32 3.629-1.787.617-.234 1.17-.392 1.623-.455.477-.066.707-.008.788.034.025.013.031.021.039.034a.56.56 0 0 1 .058.235c.029.327-.047.906-.39 1.842l1.878.689c.383-1.044.571-1.949.505-2.705-.072-.815-.45-1.493-1.16-1.865-.627-.329-1.358-.332-1.993-.244-.659.092-1.367.305-2.056.566-1.381.523-2.833 1.297-3.921 1.925l-1.341.808-.385.245-.104.068-.028.018c-.011.007-.011.007.543.84zm8.061-.344c-.198.54-.328 1.038-.36 1.484-.032.441.024.94.325 1.364.319.45.786.64 1.21.697.403.054.824-.001 1.21-.09.775-.179 1.694-.566 2.633-1.014l3.023-1.554c2.115-1.122 4.107-2.168 5.476-2.524.329-.086.573-.117.742-.115s.195.038.161.014c-.15-.105.085-.139-.076.685l1.963.384c.192-.98.152-2.083-.74-2.707-.405-.283-.868-.37-1.28-.376s-.849.069-1.274.179c-1.65.43-3.888 1.621-5.909 2.693l-2.948 1.517c-.92.439-1.673.743-2.221.87-.276.064-.429.065-.492.057-.043-.006.066.003.155.127.07.099.024.131.038-.063.014-.187.078-.49.243-.94l-1.878-.689zm14.343-1.053c-.361 1.844-.474 3.185-.413 4.161.059.95.294 1.72.811 2.215.567.544 1.242.546 1.664.459a2.34 2.34 0 0 0 .502-.167l.15-.076.049-.028.018-.011c.013-.008.013-.008-.524-.852l-.536-.844.019-.012c-.038.018-.064.027-.084.032-.037.008.053-.013.125.056.021.02-.151-.135-.198-.895-.046-.734.034-1.887.38-3.652l-1.963-.384zm2.257 5.701l.791.611.024-.031.08-.101.311-.377 1.093-1.213c.922-.954 2.005-1.894 2.904-2.27l-.771-1.846c-1.31.547-2.637 1.758-3.572 2.725l-1.184 1.314-.341.414-.093.117-.025.032c-.01.013-.01.013.781.624zm5.204-3.381c.989-.413 1.791-.42 2.697-.307.871.108 2.083.385 3.437.385v-2c-1.197 0-2.041-.226-3.19-.369-1.114-.139-2.297-.146-3.715.447l.771 1.846z" /></svg>Subscribe
-        </button>
-      </div>
-    </StyledWrapper>
-  );
-}
-
 const Footer = () => {
   const container = useRef<HTMLDivElement>(null);
-  const [openPopup, setOpenPopUp] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref);
 
@@ -150,62 +33,75 @@ const Footer = () => {
 
     hidden: { translateY: 200 },
   };
-  
-  const handleNewsLetterData = (e: FormEvent) => {
-    e.preventDefault();
-    // Could implement newsletter subscription here
-    setOpenPopUp(true);
-    if (setOpenPopUp) {
-      setTimeout(() => {
-        setOpenPopUp(false);
-      }, 2000);
-    }
-  };
 
   return (
     <>
-      {openPopup && (
-        <div className="fixed bottom-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          <p>Thanks for subscribing to our newsletter!</p>
-        </div>
-      )}
-
       <div
         className='relative h-full sm:pt-14 pt-8 bg-[#f7f7f7] text-black'
         ref={container}
       >
         <div className='sm:container px-4 mx-auto'>
-          <div className='md:flex justify-between w-full'>
-            <div>
-              <h1 className='md:text-4xl text-2xl font-semibold'>
-                Subscribe for job alerts
-              </h1>
-              <div className='pt-2 pb-6 md:w-99'>
-                <div className='py-4'>
-                  <NewsletterInput />
-                </div>
-              </div>
+          {/* Quote Section */}
+          <div className="w-full mb-8">
+            <p className="text-black text-xl font-medium italic text-center border-2 border-blue-500 py-4 px-6 rounded-lg max-w-4xl mx-auto bg-blue-50">
+              JoBless: Your daily dose of job blessings – helping freshers, graduates & pros land their dream roles!
+            </p>
+          </div>
+          
+          {/* Footer Links */}
+          <div className='md:flex justify-between w-full mb-8'>
+            <div className='md:w-1/3 mb-6 md:mb-0'>
+              <h3 className="font-bold text-xl mb-4">About JoBless</h3>
+              <p className="text-gray-700">
+                JoBless started with a vision to provide latest placement updates for students & fresher graduates. 
+                We connect talent with opportunity and help you find your dream job.
+              </p>
             </div>
-            <div className='flex gap-10'>
-              <ul>
-                <li className='text-xl font-medium'>
-                  <Link href='/privacy-policy'>Privacy Policy</Link>
+            
+            <div className='md:w-1/3 mb-6 md:mb-0'>
+              <h3 className="font-bold text-xl mb-4">Quick Links</h3>
+              <ul className="space-y-2 pl-10">
+                <li className='font-medium'>
+                  <Link href='/' className="hover:text-blue-600 transition-colors">Home</Link>
                 </li>
-                <li className='text-xl font-medium'>
-                  <Link href='/disclaimer'>Disclaimer</Link>
+                <li className='font-medium'>
+                  <Link href='/all-jobs' className="hover:text-blue-600 transition-colors">All Jobs</Link>
                 </li>
-                <li className='text-xl font-medium'>
-                  <Link href='/terms-of-use'>Terms of Use</Link>
+                <li className='font-medium'>
+                  <Link href='/fresher-jobs' className="hover:text-blue-600 transition-colors">Fresher Jobs</Link>
                 </li>
-                <li className='text-xl font-medium'>
-                  <Link href='/cookie-policy'>Cookie Policy</Link>
-                </li>
-                <li className='text-xl font-medium'>
-                  <a href='mailto:durgashashinadhwork@gmail.com'>Contact</a>
+                <li className='font-medium'>
+                  <Link href='/work-from-home' className="hover:text-blue-600 transition-colors">Work From Home</Link>
                 </li>
               </ul>
             </div>
+            
+            <div className='md:w-1/3'>
+              <h3 className="font-bold text-xl mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li className='font-medium'>
+                  <Link href='/privacy-policy' className="hover:text-blue-600 transition-colors">Privacy Policy</Link>
+                </li>
+                <li className='font-medium'>
+                  <Link href='/disclaimer' className="hover:text-blue-600 transition-colors">Disclaimer</Link>
+                </li>
+                <li className='font-medium'>
+                  <Link href='/terms-of-use' className="hover:text-blue-600 transition-colors">Terms & Conditions</Link>
+                </li>
+                <li className='font-medium'>
+                  <Link href='/cookie-policy' className="hover:text-blue-600 transition-colors">Cookie Policy</Link>
+                </li>
+                <li className='font-medium'>
+                  <a href='mailto:durgashashinadhwork@gmail.com' className="hover:text-blue-600 transition-colors">Contact</a>
+                </li>
+              </ul>
+              <p className="mt-4 text-sm text-gray-600 italic">
+                We are not affiliated with any company. We just share opportunities.
+              </p>
+            </div>
           </div>
+          
+          {/* Logo Animation */}
           <div className='border-y-2 md:py-4 border-gray-200'>
             <motion.svg
               width='500'
@@ -229,6 +125,8 @@ const Footer = () => {
               ))}
             </motion.svg>
           </div>
+          
+          {/* Copyright */}
           <div className='flex md:flex-row flex-col-reverse gap-3 justify-between py-2'>
             <span className='font-medium'>
               &copy; {new Date().getFullYear()} JobLess. All Rights Reserved.
