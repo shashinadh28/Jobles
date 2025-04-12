@@ -570,3 +570,66 @@ export async function getFresherJobsByBatch(
     return { jobs: [], lastVisibleDoc: undefined };
   }
 } 
+        )
+        .sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime())
+        .slice(0, jobsPerPage);
+      
+      return { jobs: filteredJobs, lastVisibleDoc: undefined };
+    }
+
+    console.log(`Fetching fresher jobs for batch: "${batchYear}"`);
+    
+    // SIMPLIFIED QUERY - first get all fresher jobs, then filter by batch client-side
+    const jobsQuery = query(
+      collection(db as Firestore, "jobs"),
+      where("category", "==", "fresher"),
+      limit(100) // Get more jobs since we'll filter them client-side
+    );
+    
+    const jobsSnapshot = await getDocs(jobsQuery);
+    console.log(`Query returned ${jobsSnapshot.docs.length} fresher jobs`);
+    
+    // Process results and filter by batch year
+    let jobs = jobsSnapshot.docs
+      .map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          postedAt: data.postedAt?.toDate ? data.postedAt.toDate() : new Date(),
+          deadline: data.deadline?.toDate ? data.deadline.toDate() : null
+        } as Job;
+      })
+      // Then filter by batchYear
+      .filter(job => job.batchYear && job.batchYear === batchYear);
+    
+    console.log(`After filtering by batch ${batchYear}, found ${jobs.length} jobs`);
+    
+    // Sort by date (descending) client-side
+    jobs = jobs.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
+    
+    // Apply pagination client-side
+    let startIndex = 0;
+    if (lastVisible) {
+      const lastVisibleId = lastVisible.id;
+      const lastVisibleIndex = jobs.findIndex(job => job.id === lastVisibleId);
+      if (lastVisibleIndex !== -1) {
+        startIndex = lastVisibleIndex + 1;
+      }
+    }
+    
+    const pagedJobs = jobs.slice(startIndex, startIndex + jobsPerPage);
+    
+    // Create a fake lastVisibleDoc if we need to
+    let lastVisibleDoc;
+    if (pagedJobs.length > 0) {
+      const lastJob = pagedJobs[pagedJobs.length - 1];
+      lastVisibleDoc = jobsSnapshot.docs.find(doc => doc.id === lastJob.id);
+    }
+    
+    return { jobs: pagedJobs, lastVisibleDoc: lastVisibleDoc || undefined };
+  } catch (error) {
+    console.error(`Error fetching fresher jobs by batch ${batchYear}:`, error);
+    return { jobs: [], lastVisibleDoc: undefined };
+  }
+} 

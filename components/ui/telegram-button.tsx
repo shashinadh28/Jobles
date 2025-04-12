@@ -5,7 +5,7 @@ import { FaTelegramPlane } from "react-icons/fa";
 
 const TelegramButton = () => {
   // Telegram channel link
-  const telegramLink = "https://t.me/joblessofficial";
+  const telegramLink = "https://t.me/JoBless128";
   
   return (
     <div className="fixed bottom-4 right-4 z-50">

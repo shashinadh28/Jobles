@@ -4,7 +4,7 @@ import React from 'react';
 
 const WhatsAppButton = () => {
   // WhatsApp channel link
-  const whatsappLink = "https://wa.me/+917981944160";
+  const whatsappLink = "https://whatsapp.com/channel/0029Vb62INo3AzNKekMFWF2s";
   
   return (
     <div className="fixed bottom-20 right-4 z-50">

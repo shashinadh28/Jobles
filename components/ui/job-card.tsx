@@ -40,14 +40,14 @@ export function JobCard({ job }: JobCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="group rounded-lg border border-neutral-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+      className="group rounded-lg border border-neutral-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
     >
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
         <div>
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-neutral-900 mb-2">
             {job.title}
           </h3>
-          <div className="text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+          <div className="text-lg font-medium text-neutral-700 mb-2">
             {job.company}
           </div>
         </div>
@@ -81,25 +81,25 @@ export function JobCard({ job }: JobCardProps) {
       </div>
       
       <div className="mb-4 space-y-2">
-        <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400">
+        <div className="flex items-center text-sm text-neutral-600">
           <MapPin className="mr-2 h-4 w-4" />
           {job.location}
         </div>
         
-        <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400">
+        <div className="flex items-center text-sm text-neutral-600">
           <Briefcase className="mr-2 h-4 w-4" />
           {job.jobType}
         </div>
         
         {job.experienceLevel && (
-          <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400">
+          <div className="flex items-center text-sm text-neutral-600">
             <Tag className="mr-2 h-4 w-4" />
             {job.experienceLevel}
           </div>
         )}
         
         {job.batchYear && (
-          <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400">
+          <div className="flex items-center text-sm text-neutral-600">
             <GraduationCap className="mr-2 h-4 w-4" />
             {job.batchYear} Batch
           </div>
@@ -107,22 +107,22 @@ export function JobCard({ job }: JobCardProps) {
       </div>
       
       <div className="mb-4 flex flex-wrap gap-2">
-        <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+        <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
           {job.jobType}
         </span>
         
-        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:bg-green-900/30 dark:text-green-300">
+        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
           {job.location}
         </span>
         
         {job.category && (
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800">
             {job.category}
           </span>
         )}
         
         {job.experienceLevel && (
-          <span className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+          <span className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-800">
             {job.experienceLevel}
           </span>
         )}
@@ -131,18 +131,18 @@ export function JobCard({ job }: JobCardProps) {
       {/* Skills section */}
       {job.skills && job.skills.length > 0 && (
         <div className="mb-4">
-          <h4 className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">Skills</h4>
+          <h4 className="mb-2 text-sm font-medium text-neutral-700">Skills</h4>
           <div className="flex flex-wrap gap-1">
             {job.skills.slice(0, 5).map((skill, index) => (
               <span 
                 key={index}
-                className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700"
               >
                 {skill}
               </span>
             ))}
             {job.skills.length > 5 && (
-              <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+              <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
                 +{job.skills.length - 5} more
               </span>
             )}
@@ -151,17 +151,17 @@ export function JobCard({ job }: JobCardProps) {
       )}
       
       {job.salary && (
-        <div className="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
+        <div className="mb-4 text-sm font-medium text-green-600">
           {job.salary}
         </div>
       )}
       
-      <p className="mb-6 line-clamp-3 text-sm text-neutral-600 dark:text-neutral-400">
+      <p className="mb-6 line-clamp-3 text-sm text-neutral-600">
         {limitedDescription}
       </p>
       
       <div className="flex items-center justify-between">
-        <div className="flex items-center text-xs text-neutral-500 dark:text-neutral-400">
+        <div className="flex items-center text-xs text-neutral-500">
           <Calendar className="mr-1 h-3 w-3" />
           Posted {formattedDate}
         </div>
@@ -169,7 +169,7 @@ export function JobCard({ job }: JobCardProps) {
         <div className="flex gap-3">
           <Link
             href={`/jobs/${job.id}`}
-            className="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
+            className="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
           >
             <span>Read More</span>
           </Link>

@@ -141,3 +141,82 @@ export async function notifySubscribers(job: Job): Promise<{ success: boolean; m
     };
   }
 } 
+    const subscribersSnapshot = await getDocs(subscribersQuery);
+    
+    if (subscribersSnapshot.empty) {
+      console.log("No active subscribers found");
+      return {
+        success: true,
+        message: "No subscribers to notify"
+      };
+    }
+    
+    // Extract subscriber emails
+    const subscribers: string[] = [];
+    subscribersSnapshot.forEach((doc) => {
+      const subscriber = doc.data();
+      if (subscriber.email) {
+        subscribers.push(subscriber.email);
+      }
+    });
+    
+    // Only proceed if we have subscribers
+    if (subscribers.length === 0) {
+      console.log("No valid subscriber emails found");
+      return {
+        success: true,
+        message: "No valid subscriber emails found"
+      };
+    }
+    
+    console.log(`Sending email to ${subscribers.length} subscribers`);
+    
+    // Prepare email message
+    const msg = {
+      to: subscribers,
+      from: 'noreply@jobless.vercel.app', // Replace with your verified sender
+      subject: `New Job Alert: ${job.title} at ${job.company}`,
+      text: `
+        New Job Alert from JoBless!
+        
+        Title: ${job.title}
+        Company: ${job.company}
+        Location: ${job.location}
+        Job Type: ${job.jobType}
+        
+        Description:
+        ${job.description}
+        
+        View this job: https://jobless.vercel.app/jobs/${job.id}
+        
+        To unsubscribe, click here: [Unsubscribe Link]
+      `,
+      html: `
+        <h1>New Job Alert from JoBless!</h1>
+        <h2>${job.title}</h2>
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Job Type:</strong> ${job.jobType}</p>
+        <h3>Description:</h3>
+        <p>${job.description}</p>
+        <p><a href="https://jobless.vercel.app/jobs/${job.id}">View this job</a></p>
+        <p><small>To unsubscribe, <a href="#">click here</a></small></p>
+      `
+    };
+
+    // Send the email
+    await sendgridMail.send(msg);
+    console.log("Notifications sent successfully to:", subscribers);
+
+    return {
+      success: true,
+      message: `Notifications sent to ${subscribers.length} subscribers`
+    };
+  } catch (error) {
+    console.error("Error sending notifications:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error"
+    };
+  }
+} 
