@@ -12,7 +12,59 @@ import {
   startAfter,
   Firestore
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+};
+
+// Initialize Firebase only if it hasn't been initialized yet
+let app: FirebaseApp | undefined;
+let db: Firestore | undefined;
+let auth: Auth | undefined;
+
+try {
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+    console.log('Firebase app initialized successfully!');
+  } else {
+    app = getApp();
+  }
+
+  if (app) {
+    // Initialize Firestore with persistence disabled for better performance
+    db = getFirestore(app);
+    console.log('Firestore initialized with db object:', db ? 'Success' : 'Failed');
+
+    // Initialize Auth
+    auth = getAuth(app);
+    console.log('Auth initialized successfully!');
+
+    // Disable persistence for better performance
+    // db.settings({ persistence: false });
+
+    // Connect to emulators in development
+    if (process.env.NODE_ENV === 'development') {
+      connectFirestoreEmulator(db, 'localhost', 8080);
+      connectAuthEmulator(auth, 'http://localhost:9099');
+    }
+
+    console.log('All Firebase services initialized successfully');
+  }
+} catch (error) {
+  console.error('Error initializing Firebase:', error);
+}
+
+export { db, auth };
+export default app;
 
 // Job interface
 export interface Job {
