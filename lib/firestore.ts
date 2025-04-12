@@ -154,43 +154,8 @@ const MOCK_JOBS: Job[] = [
 
 // Check if Firebase is properly configured by checking if db is properly initialized
 const isFirebaseConfigured = (): boolean => {
-  try {
-    console.log("Checking Firebase config:", db);
-    
-    // Check Firebase configuration environment variables
-    const envVars = {
-      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    };
-    
-    // Log configuration status
-    const missingVars = Object.entries(envVars)
-      .filter(([_, value]) => !value)
-      .map(([key]) => key);
-    
-    if (missingVars.length > 0) {
-      console.error(`Missing Firebase environment variables: ${missingVars.join(', ')}`);
-      return false;
-    }
-    
-    // Force using real Firebase in production environment
-    if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' || 
-        process.env.NODE_ENV === 'production') {
-      console.log("Production environment detected. Forcing real Firebase usage.");
-      // @ts-ignore - We're checking if db is initialized 
-      const hasFirestore = db && (typeof db.collection === 'function' || typeof db.doc === 'function');
-      console.log("Firestore initialized:", hasFirestore);
-      return true;
-    }
-    
-    // Check if db has expected properties that indicate it's properly initialized
-    // @ts-ignore - We're intentionally checking if db is properly initialized
-    return db && typeof db.doc === 'function';
-  } catch (error) {
-    console.error("Firebase configuration check failed:", error);
-    return false;
-  }
+  // Always return true to ensure we always use real data from Firebase
+  return true;
 };
 
 // Get all jobs with pagination
