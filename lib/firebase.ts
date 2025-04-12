@@ -18,12 +18,26 @@ const firebaseConfig = {
 
 // Trigger redeployment with updated environment variables
 
-// Debug environment variables
+// Debug environment variables - log the full values in development, partial values in production
 if (typeof window !== 'undefined') {
-  console.log("Firebase environment variables check (first few chars only for security):");
-  console.log("API Key available:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? "Yes (starts with: " + process.env.NEXT_PUBLIC_FIREBASE_API_KEY.substring(0, 5) + "...)" : "No");
-  console.log("Auth Domain available:", process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? "Yes" : "No");
-  console.log("Project ID available:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? "Yes" : "No");
+  const isProd = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+  console.log("Environment:", isProd ? "Production" : "Development");
+  console.log("Firebase environment variables check:");
+  
+  // Only show first few characters of sensitive values in logs
+  const maskValue = (value: string | undefined): string => {
+    if (!value) return "Not set";
+    if (isProd) return value.substring(0, 5) + "...";
+    return value; // Show full value in development
+  };
+  
+  console.log("API Key:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? maskValue(process.env.NEXT_PUBLIC_FIREBASE_API_KEY) : "Not set");
+  console.log("Auth Domain:", process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? maskValue(process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) : "Not set");
+  console.log("Project ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? maskValue(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) : "Not set");
+  console.log("Storage Bucket:", process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ? "Set" : "Not set");
+  console.log("Messaging Sender ID:", process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ? "Set" : "Not set");
+  console.log("App ID:", process.env.NEXT_PUBLIC_FIREBASE_APP_ID ? "Set" : "Not set");
+  console.log("Measurement ID:", process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ? "Set" : "Not set");
 }
 
 // Initialize Firebase with error handling
@@ -56,6 +70,7 @@ try {
 
   // Initialize Firestore
   db = getFirestore(firebaseApp);
+  console.log("Firestore initialized with db object:", db ? "Success" : "Failed");
   
   // Enable offline persistence for Firestore
   if (typeof window !== 'undefined') {

@@ -156,6 +156,34 @@ const MOCK_JOBS: Job[] = [
 const isFirebaseConfigured = (): boolean => {
   try {
     console.log("Checking Firebase config:", db);
+    
+    // Check Firebase configuration environment variables
+    const envVars = {
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    };
+    
+    // Log configuration status
+    const missingVars = Object.entries(envVars)
+      .filter(([_, value]) => !value)
+      .map(([key]) => key);
+    
+    if (missingVars.length > 0) {
+      console.error(`Missing Firebase environment variables: ${missingVars.join(', ')}`);
+      return false;
+    }
+    
+    // Force using real Firebase in production environment
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' || 
+        process.env.NODE_ENV === 'production') {
+      console.log("Production environment detected. Forcing real Firebase usage.");
+      // @ts-ignore - We're checking if db is initialized 
+      const hasFirestore = db && (typeof db.collection === 'function' || typeof db.doc === 'function');
+      console.log("Firestore initialized:", hasFirestore);
+      return true;
+    }
+    
     // Check if db has expected properties that indicate it's properly initialized
     // @ts-ignore - We're intentionally checking if db is properly initialized
     return db && typeof db.doc === 'function';
@@ -171,47 +199,75 @@ export async function getJobs(
   jobsPerPage: number = 10
 ) {
   try {
-    // If Firebase isn't configured, return mock data
-    if (!isFirebaseConfigured()) {
-      console.log("Using mock data for jobs");
+    const isProd = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' || 
+                   process.env.NODE_ENV === 'production';
+
+    // If Firebase isn't configured and we're not in production, return mock data
+    if (!isFirebaseConfigured() && !isProd) {
+      console.log("Using mock data for jobs (not in production)");
       return { 
         jobs: MOCK_JOBS.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime()).slice(0, jobsPerPage), 
         lastVisibleDoc: undefined 
       };
     }
 
-    let jobsQuery;
+    // Extra safeguard to ensure we're using the real db
+    console.log("Attempting to fetch real jobs from Firebase...");
     
-    if (lastVisible) {
-      jobsQuery = query(
-        collection(db as Firestore, "jobs"),
-        orderBy("postedAt", "desc"),
-        startAfter(lastVisible),
-        limit(jobsPerPage)
-      );
-    } else {
-      jobsQuery = query(
-        collection(db as Firestore, "jobs"),
-        orderBy("postedAt", "desc"),
-        limit(jobsPerPage)
-      );
+    try {
+      // Attempt to create and execute query
+      let jobsQuery;
+      
+      if (lastVisible) {
+        jobsQuery = query(
+          collection(db as Firestore, "jobs"),
+          orderBy("postedAt", "desc"),
+          startAfter(lastVisible),
+          limit(jobsPerPage)
+        );
+      } else {
+        jobsQuery = query(
+          collection(db as Firestore, "jobs"),
+          orderBy("postedAt", "desc"),
+          limit(jobsPerPage)
+        );
+      }
+      
+      console.log("Query created successfully");
+      const jobsSnapshot = await getDocs(jobsQuery);
+      console.log(`Retrieved ${jobsSnapshot.docs.length} job documents`);
+      
+      const lastVisibleDoc = jobsSnapshot.docs[jobsSnapshot.docs.length - 1];
+      
+      const jobs = jobsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        // Convert Firestore timestamps to Date objects
+        return {
+          id: doc.id,
+          ...data,
+          postedAt: data.postedAt?.toDate ? data.postedAt.toDate() : new Date(),
+          deadline: data.deadline?.toDate ? data.deadline.toDate() : null
+        };
+      }) as Job[];
+      
+      console.log(`Processed ${jobs.length} jobs`);
+      
+      return { jobs, lastVisibleDoc: lastVisibleDoc || undefined };
+    } catch (error) {
+      console.error("Error during Firebase query:", error);
+      
+      // Only fall back to mock data in non-production environments
+      if (!isProd) {
+        console.log("Falling back to mock data after error");
+        return { 
+          jobs: MOCK_JOBS.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime()).slice(0, jobsPerPage), 
+          lastVisibleDoc: undefined 
+        };
+      }
+      
+      // In production, return empty array
+      return { jobs: [], lastVisibleDoc: undefined };
     }
-    
-    const jobsSnapshot = await getDocs(jobsQuery);
-    const lastVisibleDoc = jobsSnapshot.docs[jobsSnapshot.docs.length - 1];
-    
-    const jobs = jobsSnapshot.docs.map(doc => {
-      const data = doc.data();
-      // Convert Firestore timestamps to Date objects
-      return {
-        id: doc.id,
-        ...data,
-        postedAt: data.postedAt?.toDate ? data.postedAt.toDate() : new Date(),
-        deadline: data.deadline?.toDate ? data.deadline.toDate() : null
-      };
-    }) as Job[];
-    
-    return { jobs, lastVisibleDoc: lastVisibleDoc || undefined };
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return { jobs: [], lastVisibleDoc: undefined };
