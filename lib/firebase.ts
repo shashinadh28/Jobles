@@ -16,6 +16,14 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+// Debug environment variables
+if (typeof window !== 'undefined') {
+  console.log("Firebase environment variables check (first few chars only for security):");
+  console.log("API Key available:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? "Yes (starts with: " + process.env.NEXT_PUBLIC_FIREBASE_API_KEY.substring(0, 5) + "...)" : "No");
+  console.log("Auth Domain available:", process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? "Yes" : "No");
+  console.log("Project ID available:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? "Yes" : "No");
+}
+
 // Initialize Firebase with error handling
 let firebaseApp!: FirebaseApp;
 let db!: Firestore;
@@ -24,6 +32,16 @@ let storage!: FirebaseStorage;
 let analytics: Analytics | undefined;
 
 try {
+  // Check if any configuration values are missing
+  const missingConfigs = Object.entries(firebaseConfig)
+    .filter(([key, value]) => !value)
+    .map(([key]) => key);
+  
+  if (missingConfigs.length > 0) {
+    console.error(`Missing Firebase configuration values: ${missingConfigs.join(', ')}`);
+    throw new Error("Incomplete Firebase configuration");
+  }
+
   // Check if Firebase app is already initialized
   if (getApps().length === 0) {
     console.log("Initializing Firebase app...");
@@ -66,9 +84,9 @@ try {
 } catch (error) {
   console.error("Error initializing Firebase:", error);
   // Initialize with empty objects for error cases to avoid crashes
-  db = {} as Firestore;
-  auth = {} as Auth;
-  storage = {} as FirebaseStorage;
+  if (!db) db = {} as Firestore;
+  if (!auth) auth = {} as Auth;
+  if (!storage) storage = {} as FirebaseStorage;
 }
 
 // Export the initialized services for use in other files

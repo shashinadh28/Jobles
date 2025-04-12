@@ -152,10 +152,17 @@ const MOCK_JOBS: Job[] = [
   }
 ];
 
-// Check if Firebase is properly configured by checking if db has the collection method
+// Check if Firebase is properly configured by checking if db is properly initialized
 const isFirebaseConfigured = (): boolean => {
-  console.log("Checking Firebase config:", db);
-  return true; // Force using real Firebase and not mock data
+  try {
+    console.log("Checking Firebase config:", db);
+    // Check if db has expected properties that indicate it's properly initialized
+    // @ts-ignore - We're intentionally checking if db is properly initialized
+    return db && typeof db.doc === 'function';
+  } catch (error) {
+    console.error("Firebase configuration check failed:", error);
+    return false;
+  }
 };
 
 // Get all jobs with pagination
