@@ -66,14 +66,13 @@ export default function Home() {
           }}
         >
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold text-center text-neutral-900 dark:text-neutral-100 mb-8"
+            className="text-5xl md:text-7xl font-bold text-center text-gray-800 mb-8"
             variants={fadeIn}
           >
-            <span className="text-gray-800 dark:text-gray-100 relative oswald-font">
+            <span className="text-gray-800 relative oswald-font">
               JoBless
-              <span className="absolute bottom-1 left-0 w-full h-3 bg-gray-200 dark:bg-gray-700 -z-10 rounded-md"></span>
             </span>
-            <span className="block text-3xl md:text-4xl mt-2 text-gray-800 dark:text-gray-100">
+            <span className="block text-3xl md:text-4xl mt-2 text-gray-800">
               <TypeAnimation
                 sequence={[
                   'Your daily dose of career blessings.',
@@ -91,7 +90,7 @@ export default function Home() {
           </motion.h1>
           
           <motion.p 
-            className="text-lg text-center max-w-2xl mx-auto mb-8 text-gray-800 dark:text-gray-100" 
+            className="text-lg text-center max-w-2xl mx-auto mb-8 text-gray-800" 
             variants={fadeIn}
           >
             Browse through thousands of job listings updated daily. From fresh graduate positions to remote opportunities - your next career move starts here.
