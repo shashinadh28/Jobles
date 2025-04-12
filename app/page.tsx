@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import Footer from "@/components/ui/Footer";
+import { TypeAnimation } from 'react-type-animation';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -68,12 +69,24 @@ export default function Home() {
             className="text-5xl md:text-7xl font-bold text-center text-neutral-900 dark:text-white mb-8"
             variants={fadeIn}
           >
-            <span className="text-blue-600 relative">
+            <span className="text-gray-800 dark:text-gray-100 relative oswald-font">
               JoBless
-              <span className="absolute bottom-1 left-0 w-full h-3 bg-blue-200/50 dark:bg-blue-700/30 -z-10 rounded-md"></span>
+              <span className="absolute bottom-1 left-0 w-full h-3 bg-gray-200 dark:bg-gray-700 -z-10 rounded-md"></span>
             </span>
             <span className="block text-3xl md:text-4xl mt-2">
-              Your daily dose of career blessings.
+              <TypeAnimation
+                sequence={[
+                  'Your daily dose of career blessings.',
+                  1000,
+                  'Your gateway to opportunities.',
+                  1000,
+                  'Your next career move starts here.',
+                  1000,
+                ]}
+                wrapper="span"
+                speed={50}
+                repeat={Infinity}
+              />
             </span>
           </motion.h1>
           

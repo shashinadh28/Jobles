@@ -58,4 +58,11 @@ body {
   }
 }
 
+/* Add Oswald font class for the JoBless logo */
+.oswald-font {
+  font-family: var(--font-oswald), sans-serif;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
 
