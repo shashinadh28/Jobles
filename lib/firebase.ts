@@ -5,7 +5,7 @@ import { getStorage, FirebaseStorage } from "firebase/storage";
 import { getAuth, Auth } from "firebase/auth";
 import { getAnalytics, Analytics } from "firebase/analytics";
 
-// Firebase configuration object
+// Firebase configuration object - updated for Vercel deployment
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
