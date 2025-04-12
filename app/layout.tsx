@@ -24,10 +24,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${oswald.variable}`}>
-      <head>
-        <GoogleAnalytics />
-      </head>
       <body className={inter.className}>
+        <GoogleAnalytics />
         <Navbar />
         <main className="min-h-screen pt-16">
           {children}
