@@ -16,6 +16,8 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+// Trigger redeployment with updated environment variables
+
 // Debug environment variables
 if (typeof window !== 'undefined') {
   console.log("Firebase environment variables check (first few chars only for security):");
