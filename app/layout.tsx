@@ -3,6 +3,7 @@ import { Inter, Oswald } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import FloatingButtonsWrapper from "../components/ui/floating-buttons-wrapper";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const inter = Inter({ subsets: ["latin"] });
 const oswald = Oswald({ 
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${oswald.variable}`}>
       <body className={inter.className}>
+        <GoogleAnalytics />
         <Navbar />
         <main className="min-h-screen pt-16">
           {children}
