@@ -65,7 +65,7 @@ export default function Home() {
      <div>
       <LoadingAnimation />
       {/* Hero Section with Background Beams */}
-      <BackgroundBeamsWithCollision className="min-h-[90vh] from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
+      <BackgroundBeamsWithCollision className="min-h-[90vh] from-blue-50 to-indigo-100">
         <motion.div 
           className="relative z-30 max-w-5xl mx-auto text-center pt-12 md:pt-16"
           initial="hidden"
@@ -154,10 +154,10 @@ export default function Home() {
         {/* Featured categories */}
         <section className="mb-12 md:mb-24">
           <div className="text-center mb-8 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-4 text-center">
-              <span className="text-black dark:md:text-white">Latest</span> <span className="text-blue-600">Job Listings</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 text-center">
+              <span className="text-black">Latest</span> <span className="text-blue-600">Job Listings</span>
             </h2>
-            <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-neutral-600 max-w-3xl mx-auto">
               Explore the newest opportunities added to our platform
             </p>
           </div>
@@ -170,14 +170,14 @@ export default function Home() {
               </div>
               <input 
                 type="text" 
-                className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" 
+                className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500" 
                 placeholder="Search jobs by title, company or skills..."
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
             </div>
             <select
-              className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500"
               value={experienceLevel}
               onChange={handleExperienceChange}
             >
@@ -338,7 +338,7 @@ function CategoryButton({ children, active }: CategoryButtonProps) {
       className={`rounded-full px-6 py-3 text-base font-medium transition-all ${
         active 
           ? "bg-blue-600 text-white shadow-md" 
-          : "bg-white text-neutral-600 border border-neutral-200 hover:border-blue-300 hover:text-blue-600 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 dark:hover:border-blue-700"
+          : "bg-white text-neutral-600 border border-neutral-200 hover:border-blue-300 hover:text-blue-600"
       }`}
     >
       {children}

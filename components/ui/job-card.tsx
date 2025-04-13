@@ -10,9 +10,11 @@ import { useState } from "react";
 
 interface JobCardProps {
   job: Job;
+  compact?: boolean;
+  onClick?: () => void;
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({ job, compact, onClick }: JobCardProps) {
   // Format the date to a readable string
   const formattedDate = job.postedAt instanceof Date 
     ? `${Math.ceil(Math.abs(new Date().getTime() - job.postedAt.getTime()) / (1000 * 60 * 60 * 24))} days ago`
@@ -40,7 +42,12 @@ export function JobCard({ job }: JobCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="group rounded-lg border border-neutral-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
+      className={`group relative flex cursor-pointer flex-col rounded-2xl border p-5 transition-all 
+      ${compact 
+        ? 'border-gray-200 bg-white hover:shadow-md'
+        : 'border-gray-200 bg-white shadow-md hover:border-blue-100 hover:shadow-lg'
+      }`}
+      onClick={onClick}
     >
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
         <div>

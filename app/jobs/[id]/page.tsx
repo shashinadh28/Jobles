@@ -71,11 +71,11 @@ export default function JobDetailPage() {
   if (error || !job) {
     return (
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto bg-red-50 dark:bg-red-900/20 rounded-lg p-8 text-center">
-          <h1 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-4">
+        <div className="max-w-3xl mx-auto bg-red-50 rounded-lg p-8 text-center">
+          <h1 className="text-2xl font-bold text-red-700 mb-4">
             {error || 'Job not found'}
           </h1>
-          <p className="mb-6 text-red-600 dark:text-red-300">
+          <p className="mb-6 text-red-600">
             The job you're looking for couldn't be found. It may have been removed or doesn't exist.
           </p>
           <Link 
@@ -101,12 +101,12 @@ export default function JobDetailPage() {
           Back to Jobs
         </Link>
         
-        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="border-b border-gray-200 dark:border-gray-700 p-8 pb-6">
+          <div className="border-b border-gray-200 p-8 pb-6">
             <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
               {/* Company Logo */}
-              <div className="w-48 h-48 flex items-center justify-center bg-white dark:bg-neutral-700 rounded-lg p-4 shadow">
+              <div className="w-48 h-48 flex items-center justify-center bg-white rounded-lg p-4 shadow">
                 {job.logoUrl && !logoError ? (
                   isDataUrl(job.logoUrl) ? (
                     <img
@@ -137,32 +137,32 @@ export default function JobDetailPage() {
               </div>
               
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                   {job.title}
                 </h1>
-                <h2 className="text-xl text-gray-700 dark:text-gray-300 mb-4">
+                <h2 className="text-xl text-gray-700 mb-4">
                   {job.company}
                 </h2>
                 
                 <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                  <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center text-gray-600">
                     <MapPin className="w-4 h-4 mr-1" />
                     <span>{job.location}</span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center text-gray-600">
                     <Briefcase className="w-4 h-4 mr-1" />
                     <span>{job.jobType}</span>
                   </div>
                   
                   {job.experienceLevel && (
-                    <div className="flex items-center text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center text-gray-600">
                       <Clock className="w-4 h-4 mr-1" />
                       <span>{job.experienceLevel}</span>
                     </div>
                   )}
                   
-                  <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center text-gray-600">
                     <CalendarClock className="w-4 h-4 mr-1" />
                     <span>Posted on {formattedPostedDate}</span>
                   </div>
@@ -174,17 +174,17 @@ export default function JobDetailPage() {
           {/* Main Content */}
           <div className="p-8">
             {/* Salary & Apply Button */}
-            <div className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg mb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gray-50 rounded-lg mb-8">
               {job.salary && (
                 <div className="mb-4 sm:mb-0">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Salary</div>
-                  <div className="text-xl font-bold text-green-600 dark:text-green-400">{job.salary}</div>
+                  <div className="text-sm text-gray-600">Salary</div>
+                  <div className="text-xl font-bold text-green-600">{job.salary}</div>
                 </div>
               )}
               
               {job.deadline && (
                 <div className="mb-4 sm:mb-0">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Application Deadline</div>
+                  <div className="text-sm text-gray-600">Application Deadline</div>
                   <div className="text-base font-medium">{formattedDeadlineDate}</div>
                 </div>
               )}
@@ -204,7 +204,7 @@ export default function JobDetailPage() {
             {/* Description */}
             <div className="mb-8">
               <h3 className="text-xl font-bold mb-4">Job Description</h3>
-              <div className="prose dark:prose-invert max-w-none">
+              <div className="prose max-w-none">
                 <p className="whitespace-pre-line">{job.description}</p>
               </div>
             </div>
@@ -215,7 +215,7 @@ export default function JobDetailPage() {
                 <h3 className="text-xl font-bold mb-4">Preferred qualifications</h3>
                 <ul className="list-disc pl-5 space-y-2">
                   {job.requirements.map((req, index) => (
-                    <li key={index} className="text-gray-700 dark:text-gray-300">{req}</li>
+                    <li key={index} className="text-gray-700">{req}</li>
                   ))}
                 </ul>
               </div>
@@ -227,7 +227,7 @@ export default function JobDetailPage() {
                 <h3 className="text-xl font-bold mb-4">Responsibilities</h3>
                 <ul className="list-disc pl-5 space-y-2">
                   {job.responsibilities.map((resp, index) => (
-                    <li key={index} className="text-gray-700 dark:text-gray-300">{resp}</li>
+                    <li key={index} className="text-gray-700">{resp}</li>
                   ))}
                 </ul>
               </div>
@@ -241,7 +241,7 @@ export default function JobDetailPage() {
                   {job.skills.map((skill, index) => (
                     <span 
                       key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-sm"
+                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
                     >
                       {skill}
                     </span>
@@ -251,12 +251,12 @@ export default function JobDetailPage() {
             )}
             
             {/* CTA Section */}
-            <div className="mt-10 border-t border-gray-200 dark:border-gray-700 pt-8">
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 text-center">
-                <h3 className="text-lg font-bold text-blue-800 dark:text-blue-300 mb-2">
+            <div className="mt-10 border-t border-gray-200 pt-8">
+              <div className="bg-blue-50 rounded-lg p-6 text-center">
+                <h3 className="text-lg font-bold text-blue-800 mb-2">
                   Interested in this position?
                 </h3>
-                <p className="text-blue-700 dark:text-blue-400 mb-4">
+                <p className="text-blue-700 mb-4">
                   Apply now to join {job.company} as a {job.title}.
                 </p>
                 {job.applicationLink ? (
@@ -269,7 +269,7 @@ export default function JobDetailPage() {
                     Apply Now
                   </a>
                 ) : (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600">
                     For application information, please contact the employer directly.
                   </p>
                 )}

@@ -24,12 +24,12 @@ export default function WorkFromHomePage() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900 dark:text-white">
-        Work From Home Jobs
+      <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900">
+        Work From Home Opportunities
       </h1>
       
-      <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
-        Find remote work opportunities from anywhere
+      <p className="mb-12 text-center text-lg text-neutral-600">
+        Find flexible remote positions that let you work from anywhere
       </p>
       
       {/* Search and filters */}
@@ -40,14 +40,14 @@ export default function WorkFromHomePage() {
           </div>
           <input 
             type="text" 
-            className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" 
+            className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500" 
             placeholder="Search remote jobs by title, company or skills..."
             value={searchQuery}
             onChange={handleSearchChange}
           />
         </div>
         <select
-          className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500"
           value={experienceLevel}
           onChange={(e) => {
             setExperienceLevel(e.target.value);

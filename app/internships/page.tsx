@@ -24,11 +24,11 @@ export default function InternshipsPage() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900 dark:text-white">
+      <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900">
         Internship Opportunities
       </h1>
       
-      <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
+      <p className="mb-12 text-center text-lg text-neutral-600">
         Find the perfect internship to kick-start your career
       </p>
       
@@ -40,24 +40,25 @@ export default function InternshipsPage() {
           </div>
           <input 
             type="text" 
-            className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" 
+            className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500" 
             placeholder="Search internships by title, company or skills..."
             value={searchQuery}
             onChange={handleSearchChange}
           />
         </div>
         <select
-          className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500"
           value={experienceLevel}
           onChange={(e) => {
             setExperienceLevel(e.target.value);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
-          <option value="all">All Experience Levels</option>
-          <option value="entry">Entry Level (0-2 years)</option>
-          <option value="mid">Mid Level (2-5 years)</option>
-          <option value="senior">Senior Level (5+ years)</option>
+          <option value="all">All Fields</option>
+          <option value="tech">Technology</option>
+          <option value="marketing">Marketing</option>
+          <option value="finance">Finance</option>
+          <option value="hr">Human Resources</option>
         </select>
       </div>
       
@@ -67,7 +68,7 @@ export default function InternshipsPage() {
         category="internship"
         initialJobsPerPage={20}
         searchQuery={searchQuery}
-        experienceLevel={experienceLevel}
+        experienceLevel={experienceLevel === 'all' ? '' : experienceLevel}
       />
     </div>
   );

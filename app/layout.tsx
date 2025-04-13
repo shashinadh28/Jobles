@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${oswald.variable}`}>
+    <html lang="en" className={`light ${oswald.variable}`}>
       <head>
         {/* Keep the default metadata here */}
       </head>
