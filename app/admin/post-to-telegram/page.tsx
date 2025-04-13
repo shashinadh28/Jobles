@@ -5,9 +5,19 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
+// Interface for job data
+interface JobData {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  telegramPosted?: boolean;
+  [key: string]: any; // Allow for additional properties
+}
+
 export default function PostToTelegramPage() {
   const [loading, setLoading] = useState(false);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<JobData[]>([]);
   const [selectedJobId, setSelectedJobId] = useState("");
   const [result, setResult] = useState<{success?: boolean; message?: string} | null>(null);
   
@@ -15,19 +25,24 @@ export default function PostToTelegramPage() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        // Get jobs that haven't been posted to Telegram yet
-        const q = query(
+        // Simplified query approach to avoid complex index requirements
+        // First, get all jobs sorted by creation date
+        const allJobsQuery = query(
           collection(db, "jobs"),
-          where("telegramPosted", "!=", true),
           orderBy("createdAt", "desc"),
-          limit(20)
+          limit(50) // Get more jobs initially since we'll filter client-side
         );
         
-        const snapshot = await getDocs(q);
-        const jobsList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const snapshot = await getDocs(allJobsQuery);
+        
+        // Then filter out the ones that have already been posted to Telegram (client-side filtering)
+        const jobsList = snapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          } as JobData))
+          .filter(job => !job.telegramPosted) // Filter client-side
+          .slice(0, 20); // Limit to 20 jobs for display
         
         setJobs(jobsList);
         if (jobsList.length > 0) {

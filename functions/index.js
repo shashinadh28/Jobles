@@ -57,16 +57,16 @@ exports.postJobToTelegram = functions.firestore
 
 🏢 *Company:* ${jobData.company}
 💼 *Position:* ${jobData.title}
-${jobData.location ? `📍 *Location:* ${jobData.location}\n` : ''}${jobData.salary ? `💰 *Salary:* ${jobData.salary}\n` : ''}${jobData.category ? `🏷️ *Category:* ${jobData.category}\n` : ''}
+${jobData.location ? `📍 *Location:* ${jobData.location}\n` : ''}${jobData.salary ? `💰 *Salary:* ${jobData.salary}\n` : ''}${jobData.category ? `🏷️ *Category:* ${jobData.category}\n` : ''}${jobData.experienceLevel ? `👨‍💻 *Experience Level:* ${jobData.experienceLevel}\n` : ''}${jobData.batchYear ? `🎓 *Batch Year:* ${jobData.batchYear}\n` : ''}
 📝 *Description:*
 ${shortDescription}
 
-⏰ *Posted:* ${new Date(jobData.createdAt?.toDate()).toLocaleDateString() || 'Just now'}
-
-*Requirements:*
-${truncateText(jobData.requirements || 'No specific requirements mentioned.', 200)}
+${jobData.requirements ? `*Requirements:*\n${truncateText(Array.isArray(jobData.requirements) ? jobData.requirements.join(", ") : jobData.requirements, 200)}\n\n` : ''}
+⏰ *Posted:* ${new Date(jobData.postedAt?.toDate()).toLocaleDateString() || 'Just now'}
 
 🔗 *Apply now:* [View Job Details](${jobUrl})
+
+💬 Join our Telegram Channel for more jobs: https://t.me/JoBless128
 `;
       
       console.log('Sending message to Telegram:', message);
@@ -88,7 +88,8 @@ ${truncateText(jobData.requirements || 'No specific requirements mentioned.', 20
       await snapshot.ref.update({
         telegramPosted: true,
         telegramPostTime: admin.firestore.FieldValue.serverTimestamp(),
-        telegramMessageId: response.data.result?.message_id || null
+        telegramMessageId: response.data.result?.message_id || null,
+        telegramChannelId: CHANNEL_ID
       });
       
       return null;
