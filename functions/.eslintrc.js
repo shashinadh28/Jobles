@@ -9,7 +9,7 @@ module.exports = {
     ecmaVersion: 2018,
   },
   rules: {
-    "no-console": "warn",
+    "no-console": "off", // We want to use console for logging
     "no-unused-vars": "warn",
   },
 }; 

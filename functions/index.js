@@ -1,87 +1,73 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const axios = require("axios");
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const fetch = require('node-fetch');
 
-// Initialize Firebase Admin
 admin.initializeApp();
 
-/**
- * Firebase Cloud Function that sends a notification to a Telegram channel
- * whenever a new job is added to the Firestore database.
- */
-exports.sendNewJobToTelegram = functions.firestore
-  .document('jobs/{jobId}')
-  .onCreate(async (snapshot, context) => {
-    try {
-      // Get the job data from the new document
-      const jobData = snapshot.data();
-      const jobId = context.params.jobId;
-      
-      functions.logger.info("New job added to Firestore", {
-        jobId: jobId,
-        title: jobData.title,
-        company: jobData.company
-      });
-      
-      // Bot configuration
-      const botToken = "8174082557:AAHN0p4qLOsgAyYuMwXwga0AeT2kmX5vFR8";
-      const chatId = "@JoBless128";
-      
-      // Default values for missing fields
-      const title = jobData.title || "Not specified";
-      const company = jobData.company || "Not specified";
-      const location = jobData.location || "Not specified";
-      const qualification = jobData.qualification || "Not specified";
-      const experience = jobData.experienceLevel || "Not specified";
-      const batch = jobData.batchYear || "Not specified";
-      const salary = jobData.salary || "Not specified";
-      const websiteLink = jobData.applicationLink || `https://jobless.careers/jobs/${jobId}`;
-      
-      // Links for WhatsApp and Telegram
-      const whatsappLink = "https://chat.whatsapp.com/CX1ATQLF3D1Fc4XJgJOsL1";
-      const telegramLink = "https://t.me/JoBless128";
-      
-      // Format message using Markdown
-      const message = `🚨 *${company.toUpperCase()} MASS HIRING ${title.toUpperCase()}*\n\n` +
-                      `📍 *Location:* ${location}\n` +
-                      `🎓 *Qualification:* ${qualification}\n` +
-                      `👨‍💻 *Experience:* ${experience}\n` +
-                      `🏫 *Batch:* ${batch}\n` +
-                      `💰 *Salary:* ${salary}\n\n` +
-                      `✅ *Apply Link:* [Click here to Apply](${websiteLink})\n` +
-                      `📱 *Join Our WhatsApp:* [WhatsApp Link](${whatsappLink})\n` +
-                      `📢 *Join Our Telegram:* [Telegram Channel Link](${telegramLink})`;
-      
-      functions.logger.info("Sending message to Telegram", {
-        chatId: chatId,
-        messagePreview: message.substring(0, 100) + "..." 
-      });
-      
-      // Send the message to Telegram
-      const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-      const response = await axios.post(telegramUrl, {
-        chat_id: chatId,
-        text: message,
-        parse_mode: "Markdown",
-        disable_web_page_preview: false
-      });
-      
-      // Log success
-      functions.logger.info("Job post sent to Telegram successfully", {
-        jobId: jobId,
-        telegramResponse: response.data,
-        jobTitle: title,
-        company: company
-      });
-      
-      return { success: true, message: "Job post sent to Telegram successfully" };
-    } catch (error) {
-      // Log error
-      functions.logger.error("Error sending job post to Telegram", {
-        error: error.message,
-        stack: error.stack
-      });
-      
-      return { success: false, error: error.message };
-    }
-  }); 
+exports.sendJobToTelegram = functions.firestore
+    .document('jobs/{jobId}')
+    .onCreate(async (snap, context) => {
+        const jobId = context.params.jobId;
+        const jobData = snap.data();
+        
+        console.log(`New job created with ID: ${jobId}`, jobData);
+        
+        // Extract job data with fallbacks
+        const {
+            title = "Not specified",
+            company = "Not specified",
+            location = "Not specified",
+            qualification = "Not specified",
+            experience = "Not specified",
+            batch = "Not specified",
+            salary = "Not specified",
+            websiteLink = "https://jobless.vercel.app/"
+        } = jobData;
+
+        // Create message in Markdown format
+        const message = `
+🚨 *${company} MASS HIRING ${title}*  
+📍 *Location:* ${location}  
+🎓 *Qualification:* ${qualification}  
+👨‍💻 *Experience:* ${experience}  
+🏫 *Batch:* ${batch}  
+💰 *Salary:* ${salary}  
+✅ *Apply Link:* [Click here to Apply](${websiteLink})  
+📱 *Join Our WhatsApp:* [WhatsApp Group](https://chat.whatsapp.com/ITlUqvRe99J7lBUPdgZDSo)  
+📢 *Join Our Telegram:* [Telegram Channel](https://t.me/joblesswebsite)
+        `;
+
+        // Telegram configuration
+        const telegramBotToken = '8174082557:AAHN0p4qLOsgAyYuMwXwga0AeT2kmX5vFR8';
+        const telegramChatId = '@joblesswebsite'; // Replace with your actual channel name
+        
+        const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+
+        try {
+            console.log('Sending message to Telegram:', message);
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: telegramChatId,
+                    text: message,
+                    parse_mode: 'Markdown',
+                    disable_web_page_preview: false
+                })
+            });
+
+            const data = await response.json();
+            
+            if (!data.ok) {
+                console.error('Error sending message to Telegram:', data);
+                return {success: false, error: data};
+            } else {
+                console.log('Message sent successfully to Telegram:', data);
+                return {success: true, messageId: data.result.message_id};
+            }
+        } catch (error) {
+            console.error('Exception while sending message to Telegram:', error);
+            return {success: false, error: error.toString()};
+        }
+    }); 
