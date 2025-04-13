@@ -25,11 +25,11 @@ export default function InternshipsPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900 dark:text-white">
-        Internships
+        Internship Opportunities
       </h1>
       
       <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
-        Kickstart your career with hands-on industry experience
+        Find the perfect internship to kick-start your career
       </p>
       
       {/* Search and filters */}
@@ -54,18 +54,18 @@ export default function InternshipsPage() {
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
-          <option value="all">All Durations</option>
-          <option value="entry">2-3 Months</option>
-          <option value="mid">3-6 Months</option>
-          <option value="senior">6+ Months</option>
+          <option value="all">All Experience Levels</option>
+          <option value="entry">Entry Level (0-2 years)</option>
+          <option value="mid">Mid Level (2-5 years)</option>
+          <option value="senior">Senior Level (5+ years)</option>
         </select>
       </div>
       
       <JobsList 
-        key={`internship-${refreshKey}`}
+        key={`internships-${refreshKey}`}
         type="category" 
-        category="internship" 
-        initialJobsPerPage={10}
+        category="internship"
+        initialJobsPerPage={20}
         searchQuery={searchQuery}
         experienceLevel={experienceLevel}
       />

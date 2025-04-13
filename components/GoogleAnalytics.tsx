@@ -6,7 +6,7 @@ export default function GoogleAnalytics() {
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=G-1MDFS8KLQP`}
+        src={`https://www.googletagmanager.com/gtag/js?id=G-ZDJPNTC8ZV`}
         strategy="afterInteractive"
       />
       <Script
@@ -17,9 +17,11 @@ export default function GoogleAnalytics() {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-1MDFS8KLQP', {
+            gtag('config', 'G-ZDJPNTC8ZV', {
               page_path: window.location.pathname,
-              stream_id: '10478746494',
+              stream_id: '10521646785',
+              stream_name: 'JoBless',
+              stream_url: 'https://www.jobless.careers/',
               send_page_view: true,
               debug_mode: true
             });

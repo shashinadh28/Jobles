@@ -16,23 +16,32 @@ export function useJobs(
   const [error, setError] = useState<string | null>(null);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | undefined>(undefined);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isIndexError, setIsIndexError] = useState(false);
 
   const loadJobs = async (reset: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
-
+      
       const result = await getJobs(reset ? undefined : lastVisible, initialJobsPerPage);
       
       if (result.jobs.length < initialJobsPerPage) {
         setHasMore(false);
       }
-
+      
       setJobs(reset ? result.jobs : [...jobs, ...result.jobs]);
       setLastVisible(result.lastVisibleDoc);
+      setIsIndexError(false);
     } catch (err) {
-      setError('Failed to load jobs. Please try again.');
-      console.error(err);
+      console.error("Error in useJobs:", err);
+      
+      const errString = String(err);
+      if (errString.includes("index")) {
+        setIsIndexError(true);
+        setError("Waiting for database index to be created. This may take a few minutes.");
+      } else {
+        setError('Failed to load jobs. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -43,7 +52,7 @@ export function useJobs(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true) };
+  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true), isIndexError };
 }
 
 export function useJobsByCategory(
@@ -55,12 +64,13 @@ export function useJobsByCategory(
   const [error, setError] = useState<string | null>(null);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | undefined>(undefined);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isIndexError, setIsIndexError] = useState(false);
 
   const loadJobs = async (reset: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
-
+      
       console.log(`[useJobsByCategory] Loading ${category} jobs, reset=${reset}`);
       
       const result = await getJobsByCategory(
@@ -75,12 +85,20 @@ export function useJobsByCategory(
       if (result.jobs.length < initialJobsPerPage) {
         setHasMore(false);
       }
-
+      
       setJobs(reset ? result.jobs : [...jobs, ...result.jobs]);
       setLastVisible(result.lastVisibleDoc);
+      setIsIndexError(false);
     } catch (err) {
-      setError(`Failed to load ${category} jobs. Please try again.`);
-      console.error(err);
+      console.error(`Error in useJobsByCategory for "${category}":`, err);
+      
+      const errString = String(err);
+      if (errString.includes("index")) {
+        setIsIndexError(true);
+        setError("Waiting for database index to be created. This may take a few minutes.");
+      } else {
+        setError(`Failed to load ${category} jobs. Please try again.`);
+      }
     } finally {
       setLoading(false);
     }
@@ -91,7 +109,7 @@ export function useJobsByCategory(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
-  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true) };
+  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true), isIndexError };
 }
 
 export function useJobsByLocation(
@@ -103,12 +121,13 @@ export function useJobsByLocation(
   const [error, setError] = useState<string | null>(null);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | undefined>(undefined);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isIndexError, setIsIndexError] = useState(false);
 
   const loadJobs = async (reset: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
-
+      
       const result = await getJobsByLocation(
         location, 
         reset ? undefined : lastVisible, 
@@ -118,12 +137,20 @@ export function useJobsByLocation(
       if (result.jobs.length < initialJobsPerPage) {
         setHasMore(false);
       }
-
+      
       setJobs(reset ? result.jobs : [...jobs, ...result.jobs]);
       setLastVisible(result.lastVisibleDoc);
+      setIsIndexError(false);
     } catch (err) {
-      setError(`Failed to load jobs in ${location}. Please try again.`);
-      console.error(err);
+      console.error(`Error in useJobsByLocation for "${location}":`, err);
+      
+      const errString = String(err);
+      if (errString.includes("index")) {
+        setIsIndexError(true);
+        setError("Waiting for database index to be created. This may take a few minutes.");
+      } else {
+        setError(`Failed to load jobs in ${location}. Please try again.`);
+      }
     } finally {
       setLoading(false);
     }
@@ -134,7 +161,7 @@ export function useJobsByLocation(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
-  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true) };
+  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true), isIndexError };
 }
 
 export function useFresherJobsByBatch(
@@ -146,12 +173,15 @@ export function useFresherJobsByBatch(
   const [error, setError] = useState<string | null>(null);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | undefined>(undefined);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isIndexError, setIsIndexError] = useState(false);
 
   const loadJobs = async (reset: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
-
+      
+      console.log(`[useFresherJobsByBatch] Loading jobs for batch: ${batchYear}`);
+      
       const result = await getFresherJobsByBatch(
         batchYear, 
         reset ? undefined : lastVisible, 
@@ -161,21 +191,31 @@ export function useFresherJobsByBatch(
       if (result.jobs.length < initialJobsPerPage) {
         setHasMore(false);
       }
-
+      
       setJobs(reset ? result.jobs : [...jobs, ...result.jobs]);
       setLastVisible(result.lastVisibleDoc);
+      setIsIndexError(false);
     } catch (err) {
-      setError(`Failed to load ${batchYear} batch jobs. Please try again.`);
-      console.error(err);
+      console.error(`Error in useFresherJobsByBatch for "${batchYear}":`, err);
+      
+      // Check specifically for a Firebase index error
+      const errString = String(err);
+      if (errString.includes("index")) {
+        console.warn("Firebase index error detected in fresh jobs batch query");
+        setIsIndexError(true);
+        setError("Waiting for database index to be created. This may take a few minutes.");
+      } else {
+        setError(`Failed to load jobs for batch ${batchYear}. Please try again.`);
+      }
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     loadJobs(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [batchYear]);
-
-  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true) };
+  
+  return { jobs, loading, error, hasMore, loadMore: () => loadJobs(), refresh: () => loadJobs(true), isIndexError };
 } 

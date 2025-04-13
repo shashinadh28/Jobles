@@ -25,15 +25,18 @@ export interface Job {
   batchYear?: string; // 2023, 2024, 2025, etc. for fresher jobs
   salary?: string;
   description: string;
-  requirements: string[];
-  responsibilities?: string[]; // New field for job responsibilities
-  experienceLevel?: string; // Entry Level, Mid Level, Senior Level
+  qualifications?: string[]; // Renamed from requirements
+  requirements?: string[]; // Keep for backward compatibility
+  responsibilities?: string[];
+  perks?: string[]; // Added new field
   skills?: string[]; // Array of skills required for the job
+  experienceLevel?: string; // Add this field
   postedAt: Date;
-  deadline?: Date;
+  deadline?: Date | null;
   applicationLink?: string;
   logoUrl?: string;
-  status?: "active" | "draft" | "expired"; // Job status
+  status?: string;
+  batchYears?: string[]; // Support for multiple batch years
 }
 
 // Mock data for development when Firebase isn't configured
@@ -48,7 +51,7 @@ const MOCK_JOBS: Job[] = [
     batchYear: "2024",
     salary: "₹5-7 LPA",
     description: "We're looking for a passionate Frontend Developer to join our team.",
-    requirements: ["HTML/CSS", "JavaScript", "React", "Responsive Design"],
+    qualifications: ["HTML/CSS", "JavaScript", "React", "Responsive Design"],
     responsibilities: ["Develop web applications using React", "Collaborate with backend developers"],
     experienceLevel: "Entry Level",
     skills: ["React", "JavaScript", "TypeScript", "Tailwind CSS"],
@@ -67,7 +70,7 @@ const MOCK_JOBS: Job[] = [
     batchYear: "2023",
     salary: "₹6-8 LPA",
     description: "Join our backend team to build scalable APIs and services.",
-    requirements: ["Node.js", "Express", "MongoDB", "REST API Design"],
+    qualifications: ["Node.js", "Express", "MongoDB", "REST API Design"],
     responsibilities: ["Develop and maintain backend systems", "Integrate APIs with frontend"],
     experienceLevel: "Entry Level",
     skills: ["Node.js", "Express", "MongoDB", "REST APIs"],
@@ -85,7 +88,7 @@ const MOCK_JOBS: Job[] = [
     category: "internship",
     salary: "₹15,000/month",
     description: "Learn and grow as a UI/UX designer in our creative team.",
-    requirements: ["Figma", "Adobe XD", "UI/UX Principles", "Prototyping"],
+    qualifications: ["Figma", "Adobe XD", "UI/UX Principles", "Prototyping"],
     responsibilities: ["Create wireframes and prototypes", "Conduct user research"],
     experienceLevel: "Entry Level",
     skills: ["Figma", "UI Design", "UX Research", "Prototyping"],
@@ -103,7 +106,7 @@ const MOCK_JOBS: Job[] = [
     category: "wfh",
     salary: "₹4.5-6 LPA",
     description: "Work remotely analyzing data and creating insightful reports.",
-    requirements: ["Excel", "SQL", "Python", "Data Visualization"],
+    qualifications: ["Excel", "SQL", "Python", "Data Visualization"],
     responsibilities: ["Analyze data using SQL and Python", "Create data visualizations"],
     experienceLevel: "Entry Level",
     skills: ["SQL", "Python", "Pandas", "Tableau"],
@@ -122,7 +125,7 @@ const MOCK_JOBS: Job[] = [
     batchYear: "2025",
     salary: "₹7-9 LPA",
     description: "Develop end-to-end web applications for our clients.",
-    requirements: ["JavaScript", "React", "Node.js", "MongoDB"],
+    qualifications: ["JavaScript", "React", "Node.js", "MongoDB"],
     responsibilities: ["Develop full stack applications", "Integrate backend and frontend"],
     experienceLevel: "Entry Level",
     skills: ["MERN Stack", "JavaScript", "HTML/CSS", "Git"],
@@ -141,7 +144,7 @@ const MOCK_JOBS: Job[] = [
     batchYear: "2024",
     salary: "₹8-10 LPA",
     description: "Help us build and maintain our cloud infrastructure.",
-    requirements: ["AWS", "Docker", "Kubernetes", "CI/CD"],
+    qualifications: ["AWS", "Docker", "Kubernetes", "CI/CD"],
     responsibilities: ["Manage cloud infrastructure", "Implement CI/CD pipelines"],
     experienceLevel: "Entry Level",
     skills: ["AWS", "Docker", "Kubernetes", "Jenkins"],
@@ -158,81 +161,63 @@ const isFirebaseConfigured = (): boolean => {
   return true;
 };
 
+// Cache for frequently accessed data
+const jobCache = new Map<string, { data: { jobs: Job[], lastVisibleDoc?: QueryDocumentSnapshot<DocumentData> }, timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // Get all jobs with pagination
 export async function getJobs(
   lastVisible?: QueryDocumentSnapshot<DocumentData>,
   jobsPerPage: number = 10
-) {
+): Promise<{ jobs: Job[], lastVisibleDoc?: QueryDocumentSnapshot<DocumentData> }> {
   try {
+    const cacheKey = `jobs_${lastVisible?.id || 'initial'}_${jobsPerPage}`;
+    const cachedData = jobCache.get(cacheKey);
+    
+    // Return cached data if it's still valid
+    if (cachedData && Date.now() - cachedData.timestamp < CACHE_TTL) {
+      console.log("Returning cached jobs data");
+      return cachedData.data;
+    }
+
     const isProd = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' || 
                    process.env.NODE_ENV === 'production';
 
     // If Firebase isn't configured and we're not in production, return mock data
     if (!isFirebaseConfigured() && !isProd) {
       console.log("Using mock data for jobs (not in production)");
-      return { 
+      const result = { 
         jobs: MOCK_JOBS.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime()).slice(0, jobsPerPage), 
         lastVisibleDoc: undefined 
       };
+      jobCache.set(cacheKey, { data: result, timestamp: Date.now() });
+      return result;
     }
 
-    // Extra safeguard to ensure we're using the real db
-    console.log("Attempting to fetch real jobs from Firebase...");
+    // Create optimized query
+    const jobsQuery = query(
+      collection(db as Firestore, "jobs"),
+      orderBy("postedAt", "desc"),
+      ...(lastVisible ? [startAfter(lastVisible)] : []),
+      limit(jobsPerPage)
+    );
     
-    try {
-      // Attempt to create and execute query
-      let jobsQuery;
-      
-      if (lastVisible) {
-        jobsQuery = query(
-          collection(db as Firestore, "jobs"),
-          orderBy("postedAt", "desc"),
-          startAfter(lastVisible),
-          limit(jobsPerPage)
-        );
-      } else {
-        jobsQuery = query(
-          collection(db as Firestore, "jobs"),
-          orderBy("postedAt", "desc"),
-          limit(jobsPerPage)
-        );
-      }
-      
-      console.log("Query created successfully");
-      const jobsSnapshot = await getDocs(jobsQuery);
-      console.log(`Retrieved ${jobsSnapshot.docs.length} job documents`);
-      
-      const lastVisibleDoc = jobsSnapshot.docs[jobsSnapshot.docs.length - 1];
-      
-      const jobs = jobsSnapshot.docs.map(doc => {
-        const data = doc.data();
-        // Convert Firestore timestamps to Date objects
-        return {
-          id: doc.id,
-          ...data,
-          postedAt: data.postedAt?.toDate ? data.postedAt.toDate() : new Date(),
-          deadline: data.deadline?.toDate ? data.deadline.toDate() : null
-        };
-      }) as Job[];
-      
-      console.log(`Processed ${jobs.length} jobs`);
-      
-      return { jobs, lastVisibleDoc: lastVisibleDoc || undefined };
-    } catch (error) {
-      console.error("Error during Firebase query:", error);
-      
-      // Only fall back to mock data in non-production environments
-      if (!isProd) {
-        console.log("Falling back to mock data after error");
-        return { 
-          jobs: MOCK_JOBS.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime()).slice(0, jobsPerPage), 
-          lastVisibleDoc: undefined 
-        };
-      }
-      
-      // In production, return empty array
-      return { jobs: [], lastVisibleDoc: undefined };
-    }
+    const jobsSnapshot = await getDocs(jobsQuery);
+    const lastVisibleDoc = jobsSnapshot.docs[jobsSnapshot.docs.length - 1];
+    
+    const jobs = jobsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      postedAt: doc.data().postedAt?.toDate ? doc.data().postedAt.toDate() : new Date(),
+      deadline: doc.data().deadline?.toDate ? doc.data().deadline.toDate() : null
+    })) as Job[];
+    
+    const result = { jobs, lastVisibleDoc: lastVisibleDoc || undefined };
+    
+    // Cache the result
+    jobCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    
+    return result;
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return { jobs: [], lastVisibleDoc: undefined };
@@ -271,6 +256,12 @@ export async function getJobsByCategory(
   jobsPerPage: number = 10
 ) {
   try {
+    // Handle empty category by returning all jobs instead
+    if (!category || category.trim() === '') {
+      console.log("Empty category provided, falling back to getJobs");
+      return getJobs(lastVisible, jobsPerPage);
+    }
+
     // If Firebase isn't configured, return mock data
     if (!isFirebaseConfigured()) {
       const filteredJobs = MOCK_JOBS
@@ -463,75 +454,110 @@ export async function getFresherJobsByBatch(
   batchYear: string,
   lastVisible?: QueryDocumentSnapshot<DocumentData>,
   jobsPerPage: number = 10
-) {
+): Promise<{ jobs: Job[], lastVisibleDoc?: QueryDocumentSnapshot<DocumentData> }> {
   try {
-    // If Firebase isn't configured, return mock data
     if (!isFirebaseConfigured()) {
-      console.log(`Using mock data for batch: ${batchYear}`);
-      const filteredJobs = MOCK_JOBS
-        .filter(job => 
-          job.category.toLowerCase() === "fresher" && 
-          job.batchYear === batchYear
-        )
-        .sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime())
-        .slice(0, jobsPerPage);
+      const mockJobs = MOCK_JOBS.filter(job => {
+        // Check if this job matches the requested batch year
+        if (!job.category || job.category.toLowerCase() !== "fresher") return false;
+        
+        // Check for batch year match
+        if (job.batchYear === batchYear) return true;
+        
+        // Also check batchYears array if available
+        if (job.batchYears && Array.isArray(job.batchYears)) {
+          return job.batchYears.includes(batchYear);
+        }
+        
+        return false;
+      });
       
-      return { jobs: filteredJobs, lastVisibleDoc: undefined };
+      // Sort and limit mock data
+      const result = { 
+        jobs: mockJobs
+          .sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime())
+          .slice(0, jobsPerPage), 
+        lastVisibleDoc: undefined 
+      };
+      
+      return result;
     }
 
-    console.log(`Fetching fresher jobs for batch: "${batchYear}"`);
-    
-    // SIMPLIFIED QUERY - first get all fresher jobs, then filter by batch client-side
-    const jobsQuery = query(
-      collection(db as Firestore, "jobs"),
-      where("category", "==", "fresher"),
-      limit(100) // Get more jobs since we'll filter them client-side
-    );
-    
-    const jobsSnapshot = await getDocs(jobsQuery);
-    console.log(`Query returned ${jobsSnapshot.docs.length} fresher jobs`);
-    
-    // Process results and filter by batch year
-    let jobs = jobsSnapshot.docs
-      .map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          postedAt: data.postedAt?.toDate ? data.postedAt.toDate() : new Date(),
-          deadline: data.deadline?.toDate ? data.deadline.toDate() : null
-        } as Job;
-      })
-      // Then filter by batchYear
-      .filter(job => job.batchYear && job.batchYear === batchYear);
-    
-    console.log(`After filtering by batch ${batchYear}, found ${jobs.length} jobs`);
-    
-    // Sort by date (descending) client-side
-    jobs = jobs.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
-    
-    // Apply pagination client-side
-    let startIndex = 0;
-    if (lastVisible) {
-      const lastVisibleId = lastVisible.id;
-      const lastVisibleIndex = jobs.findIndex(job => job.id === lastVisibleId);
-      if (lastVisibleIndex !== -1) {
-        startIndex = lastVisibleIndex + 1;
-      }
+    try {
+      // Try the complex query first (requires composite index)
+      const fresherJobsQuery = query(
+        collection(db as Firestore, "jobs"),
+        where("category", "==", "fresher"),
+        where("status", "==", "active"),
+        // We need to use OR query logic here, but Firestore doesn't directly support OR
+        // So we'll use one condition and filter the results client-side
+        where("batchYears", "array-contains", batchYear),
+        ...(lastVisible ? [startAfter(lastVisible)] : []),
+        orderBy("postedAt", "desc"),
+        limit(jobsPerPage * 2) // Get extra to allow for filtering
+      );
+
+      const querySnapshot = await getDocs(fresherJobsQuery);
+      const lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+      
+      const jobs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        postedAt: doc.data().postedAt.toDate(),
+        deadline: doc.data().deadline?.toDate() || null
+      })) as Job[];
+      
+      return {
+        jobs: jobs.slice(0, jobsPerPage),
+        lastVisibleDoc: lastVisibleDoc || undefined
+      };
+    } catch (indexError) {
+      console.warn("Index not yet available, falling back to simpler query:", indexError);
+      
+      // Fallback: Get all fresher jobs and filter client-side
+      const simpleQuery = query(
+        collection(db as Firestore, "jobs"),
+        where("category", "==", "fresher"),
+        where("status", "==", "active"),
+        orderBy("postedAt", "desc"),
+        limit(100) // Get more to filter client-side
+      );
+      
+      const querySnapshot = await getDocs(simpleQuery);
+      
+      // Filter by batch year client-side
+      const filteredJobs = querySnapshot.docs
+        .map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            postedAt: data.postedAt?.toDate ? data.postedAt.toDate() : new Date(),
+            deadline: data.deadline?.toDate ? data.deadline.toDate() : null
+          } as Job;
+        })
+        .filter(job => {
+          // Check for batchYear exact match
+          if (job.batchYear === batchYear) return true;
+          
+          // Check batchYears array if available
+          if (job.batchYears && Array.isArray(job.batchYears)) {
+            return job.batchYears.includes(batchYear);
+          }
+          
+          return false;
+        });
+      
+      // Apply pagination
+      const paginatedJobs = filteredJobs.slice(0, jobsPerPage);
+      
+      return {
+        jobs: paginatedJobs,
+        lastVisibleDoc: undefined // No cursor-based pagination for fallback method
+      };
     }
-    
-    const pagedJobs = jobs.slice(startIndex, startIndex + jobsPerPage);
-    
-    // Create a fake lastVisibleDoc if we need to
-    let lastVisibleDoc;
-    if (pagedJobs.length > 0) {
-      const lastJob = pagedJobs[pagedJobs.length - 1];
-      lastVisibleDoc = jobsSnapshot.docs.find(doc => doc.id === lastJob.id);
-    }
-    
-    return { jobs: pagedJobs, lastVisibleDoc: lastVisibleDoc || undefined };
   } catch (error) {
-    console.error(`Error fetching fresher jobs by batch ${batchYear}:`, error);
+    console.error("Error fetching fresher jobs by batch:", error);
     return { jobs: [], lastVisibleDoc: undefined };
   }
 } 

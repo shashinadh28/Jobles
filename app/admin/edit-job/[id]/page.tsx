@@ -32,11 +32,12 @@ export default function EditJobPage() {
     location: "",
     jobType: "full-time",
     category: "fresher",
-    batchYear: "",
+    batchYears: [] as string[],
     salary: "",
     description: "",
-    requirements: "",
+    qualifications: "",
     responsibilities: "",
+    perks: "",
     experienceLevel: "Entry Level",
     skills: "",
     deadline: "",
@@ -64,21 +65,34 @@ export default function EditJobPage() {
         const jobData = jobDoc.data();
         console.log("Fetched job data:", jobData);
         
-        // Format date for input
-        let deadlineDate = "";
-        if (jobData.deadline) {
-          const deadline = jobData.deadline.toDate ? jobData.deadline.toDate() : new Date(jobData.deadline);
-          deadlineDate = deadline.toISOString().split('T')[0];
-        }
-        
-        // Format requirements array to string
-        const requirementsString = jobData.requirements ? jobData.requirements.join('\n') : '';
-        
-        // Format responsibilities array to string
-        const responsibilitiesString = jobData.responsibilities ? jobData.responsibilities.join('\n') : '';
-        
-        // Format skills array to string
-        const skillsString = jobData.skills ? jobData.skills.join(', ') : '';
+        // Convert Firestore arrays to strings for form fields
+        const requirementsString = Array.isArray(jobData.requirements) 
+          ? jobData.requirements.join('\n') 
+          : "";
+          
+        const responsibilitiesString = Array.isArray(jobData.responsibilities) 
+          ? jobData.responsibilities.join('\n') 
+          : "";
+          
+        const perksString = Array.isArray(jobData.perks) 
+          ? jobData.perks.join('\n') 
+          : "";
+          
+        const skillsString = Array.isArray(jobData.skills) 
+          ? jobData.skills.join(', ') 
+          : "";
+          
+        // Convert deadline timestamp to date string if it exists
+        const deadlineString = jobData.deadline?.toDate 
+          ? jobData.deadline.toDate().toISOString().split('T')[0] 
+          : "";
+          
+        // Process batch years array
+        const batchYears = Array.isArray(jobData.batchYears) 
+          ? jobData.batchYears 
+          : jobData.batchYear 
+            ? [jobData.batchYear] 
+            : [];
         
         setFormData({
           title: jobData.title || "",
@@ -86,14 +100,15 @@ export default function EditJobPage() {
           location: jobData.location || "",
           jobType: jobData.jobType || "full-time",
           category: jobData.category || "fresher",
-          batchYear: jobData.batchYear || "",
+          batchYears: batchYears,
           salary: jobData.salary || "",
           description: jobData.description || "",
-          requirements: requirementsString,
+          qualifications: requirementsString,
           responsibilities: responsibilitiesString,
+          perks: perksString,
           experienceLevel: jobData.experienceLevel || "Entry Level",
           skills: skillsString,
-          deadline: deadlineDate,
+          deadline: deadlineString,
           applicationLink: jobData.applicationLink || "",
           logoUrl: jobData.logoUrl || "",
           status: jobData.status || "active"
@@ -244,12 +259,13 @@ export default function EditJobPage() {
         jobType: formData.jobType,
         category: formData.category.toLowerCase(),
         description: formData.description,
-        requirements: formData.requirements.split('\n').filter(Boolean),
+        qualifications: formData.qualifications.split('\n').filter(Boolean),
         responsibilities: formData.responsibilities.split('\n').filter(Boolean),
+        perks: formData.perks.split('\n').filter(Boolean),
         skills: formData.skills.split(',').map(skill => skill.trim()).filter(Boolean),
         status: formData.status || "active",
         // Optional fields
-        batchYear: formData.batchYear || null,
+        batchYears: formData.batchYears.length > 0 ? formData.batchYears : null,
         salary: formData.salary || null,
         experienceLevel: formData.experienceLevel || null,
         applicationLink: formData.applicationLink || null,
@@ -303,6 +319,20 @@ export default function EditJobPage() {
       // This may not run if there are Firebase connectivity issues
       setIsSubmitting(false);
     }
+  };
+
+  // Add function to handle batch year selection
+  const handleBatchYearToggle = (year: string) => {
+    setFormData(prev => {
+      const currentYears = [...prev.batchYears];
+      if (currentYears.includes(year)) {
+        // Remove year if already selected
+        return { ...prev, batchYears: currentYears.filter(y => y !== year) };
+      } else {
+        // Add year if not selected
+        return { ...prev, batchYears: [...currentYears, year] };
+      }
+    });
   };
 
   if (isLoading) {
@@ -497,23 +527,25 @@ export default function EditJobPage() {
                 
                 {formData.category === "fresher" && (
                   <div>
-                    <label htmlFor="batchYear" className="block text-sm font-medium text-gray-700 mb-1">
-                      Batch Year
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Batch Years (Select multiple if applicable)
                     </label>
-                    <select
-                      id="batchYear"
-                      name="batchYear"
-                      value={formData.batchYear}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">Any Batch Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
-                    </select>
+                    <div className="flex flex-wrap gap-2">
+                      {["2022", "2023", "2024", "2025", "2026", "2027"].map(year => (
+                        <div
+                          key={year}
+                          onClick={() => handleBatchYearToggle(year)}
+                          className={`px-3 py-2 rounded-md text-sm cursor-pointer transition-colors ${
+                            formData.batchYears.includes(year)
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          }`}
+                        >
+                          {year}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">Click to select/deselect multiple batch years</p>
                   </div>
                 )}
                 
@@ -574,15 +606,15 @@ export default function EditJobPage() {
               </div>
               
               <div>
-                <label htmlFor="requirements" className="block text-sm font-medium text-gray-700 mb-1">
-                  Preferred qualifications
+                <label htmlFor="qualifications" className="block text-sm font-medium text-gray-700 mb-1">
+                  Qualifications
                 </label>
                 <textarea
-                  id="requirements"
-                  name="requirements"
+                  id="qualifications"
+                  name="qualifications" 
                   required
                   rows={4}
-                  value={formData.requirements}
+                  value={formData.qualifications}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Bachelor's degree in Computer Science
@@ -609,6 +641,24 @@ Collaborate with cross-functional teams
 Implement responsive designs"
                 ></textarea>
                 <p className="mt-1 text-sm text-gray-500">Add one responsibility per line</p>
+              </div>
+              
+              <div>
+                <label htmlFor="perks" className="block text-sm font-medium text-gray-700 mb-1">
+                  Perks
+                </label>
+                <textarea
+                  id="perks"
+                  name="perks"
+                  rows={4}
+                  value={formData.perks}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Health insurance
+Flexible working hours
+Professional development stipend"
+                ></textarea>
+                <p className="mt-1 text-sm text-gray-500">Add one perk per line</p>
               </div>
               
               <div>

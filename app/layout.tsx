@@ -3,7 +3,7 @@ import { Inter, Oswald } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import FloatingButtonsWrapper from "../components/ui/floating-buttons-wrapper";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ["latin"] });
 const oswald = Oswald({ 
@@ -24,8 +24,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${oswald.variable}`}>
+      <head>
+        {/* Keep the default metadata here */}
+      </head>
       <body className={inter.className}>
-        <GoogleAnalytics />
+        {/* Google tag (gtag.js) */}
+        <Script 
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZDJPNTC8ZV" 
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-ZDJPNTC8ZV');
+          `}
+        </Script>
+        
         <Navbar />
         <main className="min-h-screen pt-16">
           {children}

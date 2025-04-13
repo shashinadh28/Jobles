@@ -29,7 +29,7 @@ export default function WorkFromHomePage() {
       </h1>
       
       <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
-        Find remote jobs that allow you to work from the comfort of your home
+        Find remote work opportunities from anywhere
       </p>
       
       {/* Search and filters */}
@@ -41,7 +41,7 @@ export default function WorkFromHomePage() {
           <input 
             type="text" 
             className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" 
-            placeholder="Search jobs by title, company or skills..."
+            placeholder="Search remote jobs by title, company or skills..."
             value={searchQuery}
             onChange={handleSearchChange}
           />
@@ -64,8 +64,8 @@ export default function WorkFromHomePage() {
       <JobsList 
         key={`wfh-${refreshKey}`}
         type="category" 
-        category="wfh" 
-        initialJobsPerPage={10}
+        category="wfh"
+        initialJobsPerPage={20}
         searchQuery={searchQuery}
         experienceLevel={experienceLevel}
       />

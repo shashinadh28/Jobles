@@ -64,7 +64,7 @@ export default function AllJobsPage() {
       <JobsList 
         key={`all-${refreshKey}`}
         type="all" 
-        initialJobsPerPage={10}
+        initialJobsPerPage={20}
         searchQuery={searchQuery}
         experienceLevel={experienceLevel}
       />

@@ -33,6 +33,14 @@ const Navbar = () => {
 
   const [jobsDropdownOpen, setJobsDropdownOpen] = useState(false);
 
+  const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    const contactSection = document.getElementById('contact-us');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   if (!mounted) return null;
 
   return (
@@ -91,7 +99,11 @@ const Navbar = () => {
             </div>
             
             <NavLink href="/about" currentPath={pathname}>About</NavLink>
-            <NavLink href="/contact" currentPath={pathname}>Contact</NavLink>
+            <a href="#contact-us" onClick={handleContactClick} className={`relative px-4 py-2 text-base font-medium rounded-full transition-all duration-200 ${
+              pathname === '/contact' 
+                ? "text-blue-600" 
+                : "text-gray-700 hover:text-blue-600"
+            }`}>Contact</a>
             
             {/* Admin Button */}
             <Link 
@@ -128,7 +140,11 @@ const Navbar = () => {
           <MobileNavLink href="/work-from-home" currentPath={pathname}>Work From Home</MobileNavLink>
           <MobileNavLink href="/internships" currentPath={pathname}>Internships</MobileNavLink>
           <MobileNavLink href="/about" currentPath={pathname}>About</MobileNavLink>
-          <MobileNavLink href="/contact" currentPath={pathname}>Contact</MobileNavLink>
+          <a href="#contact-us" onClick={handleContactClick} className={`block px-3 py-2 rounded-md text-base font-medium ${
+            pathname === '/contact' 
+              ? "bg-blue-50 text-blue-600" 
+              : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+          }`}>Contact</a>
           
           <Link 
             href="/admin/login" 

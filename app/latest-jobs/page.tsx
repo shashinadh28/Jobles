@@ -25,11 +25,11 @@ export default function LatestJobsPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900 dark:text-white">
-        Latest Job Listings
+        Latest Job Opportunities
       </h1>
       
       <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
-        Explore the most recent job opportunities available on our platform
+        Explore the most recent job listings added to our platform
       </p>
       
       {/* Search and filters */}
@@ -64,7 +64,7 @@ export default function LatestJobsPage() {
       <JobsList 
         key={`latest-${refreshKey}`}
         type="all" 
-        initialJobsPerPage={10}
+        initialJobsPerPage={20}
         searchQuery={searchQuery}
         experienceLevel={experienceLevel}
       />

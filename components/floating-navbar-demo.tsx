@@ -110,6 +110,16 @@ export default function FloatingNavDemo() {
       name: "Remote Jobs",
       link: "/work-from-home",
       icon: <IconBuilding className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    },
+    {
+      name: "About",
+      link: "/about",
+      icon: <IconWorld className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    },
+    {
+      name: "Contact",
+      link: "/contact",
+      icon: <IconSchool className="h-4 w-4 text-neutral-500 dark:text-white" />,
     }
   ];
   

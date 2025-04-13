@@ -9,6 +9,7 @@ export default function FresherJobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("all");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isIndexError, setIsIndexError] = useState(false);
 
   // Handle search input changes with debounce
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,8 +30,8 @@ export default function FresherJobsPage() {
         Fresher Jobs
       </h1>
       
-      <p className="mb-8 text-center text-lg text-neutral-600 dark:text-neutral-300">
-        Find your first job opportunity after graduation
+      <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
+        Find entry-level positions perfect for recent graduates
       </p>
       
       {/* Search and filters */}
@@ -42,7 +43,7 @@ export default function FresherJobsPage() {
           <input 
             type="text" 
             className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" 
-            placeholder="Search jobs by title, company or skills..."
+            placeholder="Search fresher jobs by title, company or skills..."
             value={searchQuery}
             onChange={handleSearchChange}
           />
@@ -68,6 +69,7 @@ export default function FresherJobsPage() {
           active={selectedBatch === null} 
           onClick={() => {
             setSelectedBatch(null);
+            setIsIndexError(false);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
@@ -78,6 +80,7 @@ export default function FresherJobsPage() {
           active={selectedBatch === "2023"} 
           onClick={() => {
             setSelectedBatch("2023");
+            setIsIndexError(false);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
@@ -88,6 +91,7 @@ export default function FresherJobsPage() {
           active={selectedBatch === "2024"} 
           onClick={() => {
             setSelectedBatch("2024");
+            setIsIndexError(false);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
@@ -98,6 +102,7 @@ export default function FresherJobsPage() {
           active={selectedBatch === "2025"} 
           onClick={() => {
             setSelectedBatch("2025");
+            setIsIndexError(false);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
@@ -108,6 +113,7 @@ export default function FresherJobsPage() {
           active={selectedBatch === "2026"} 
           onClick={() => {
             setSelectedBatch("2026");
+            setIsIndexError(false);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
@@ -118,6 +124,7 @@ export default function FresherJobsPage() {
           active={selectedBatch === "2027"} 
           onClick={() => {
             setSelectedBatch("2027");
+            setIsIndexError(false);
             setRefreshKey(prevKey => prevKey + 1);
           }}
         >
@@ -125,26 +132,23 @@ export default function FresherJobsPage() {
         </BatchButton>
       </div>
       
-      {/* Render jobs based on selected batch */}
-      {selectedBatch ? (
-        <JobsList 
-          key={`batch-${selectedBatch}-${refreshKey}`}
-          type="batch" 
-          batchYear={selectedBatch}
-          initialJobsPerPage={10}
-          searchQuery={searchQuery}
-          experienceLevel={experienceLevel}
-        />
-      ) : (
-        <JobsList 
-          key={`fresher-${refreshKey}`}
-          type="category" 
-          category="fresher"
-          initialJobsPerPage={10}
-          searchQuery={searchQuery}
-          experienceLevel={experienceLevel}
-        />
+      {isIndexError && (
+        <div className="mt-4 mx-auto max-w-md rounded-lg bg-amber-50 p-3 text-center text-amber-800 border border-amber-200">
+          <p>The search index is still being created. This may take a few minutes. Please try again shortly.</p>
+        </div>
       )}
+      
+      {/* Render jobs based on selected batch */}
+      <JobsList 
+        key={`fresher-${refreshKey}`}
+        type={selectedBatch ? "batch" : "category"}
+        category="fresher" 
+        batchYear={selectedBatch || ''}
+        initialJobsPerPage={20}
+        searchQuery={searchQuery}
+        experienceLevel={experienceLevel}
+        onIndexError={setIsIndexError}
+      />
     </div>
   );
 }

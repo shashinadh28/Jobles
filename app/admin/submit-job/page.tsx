@@ -27,11 +27,12 @@ export default function SubmitJobPage() {
     location: "",
     jobType: "full-time", // default value
     category: "fresher", // default value
-    batchYear: "",
+    batchYears: [] as string[], // Changed from single string to array
     salary: "",
     description: "",
-    requirements: "",
-    responsibilities: "", // New field for responsibilities
+    qualifications: "", // Renamed from requirements
+    responsibilities: "",
+    perks: "", // New field for perks
     experienceLevel: "Entry Level", // default value
     skills: "",
     deadline: "",
@@ -42,6 +43,20 @@ export default function SubmitJobPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Handle batch year selection
+  const handleBatchYearToggle = (year: string) => {
+    setFormData(prev => {
+      const currentYears = [...prev.batchYears];
+      if (currentYears.includes(year)) {
+        // Remove year if already selected
+        return { ...prev, batchYears: currentYears.filter(y => y !== year) };
+      } else {
+        // Add year if not selected
+        return { ...prev, batchYears: [...currentYears, year] };
+      }
+    });
   };
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,13 +179,14 @@ export default function SubmitJobPage() {
         jobType: formData.jobType,
         category: formData.category.toLowerCase(),
         description: formData.description,
-        requirements: formData.requirements.split('\n').filter(Boolean),
-        responsibilities: formData.responsibilities.split('\n').filter(Boolean), // Process responsibilities
+        qualifications: formData.qualifications.split('\n').filter(Boolean), // Renamed from requirements
+        responsibilities: formData.responsibilities.split('\n').filter(Boolean),
+        perks: formData.perks.split('\n').filter(Boolean), // Add perks processing
         skills: formData.skills.split(',').map(skill => skill.trim()).filter(Boolean),
         // Always use current time for posted date
         postedAt: Timestamp.fromDate(new Date(Date.now() - 1000 * 60 * 60)), // One hour ago
         // Optional fields
-        batchYear: formData.batchYear || null,
+        batchYears: formData.batchYears.length > 0 ? formData.batchYears : null, // Changed to array
         salary: formData.salary || null,
         experienceLevel: formData.experienceLevel || null,
         applicationLink: formData.applicationLink || null,
@@ -252,11 +268,12 @@ export default function SubmitJobPage() {
                     location: "",
                     jobType: "full-time",
                     category: "fresher",
-                    batchYear: "",
+                    batchYears: [], // Changed from batchYear string to batchYears array
                     salary: "",
                     description: "",
-                    requirements: "",
+                    qualifications: "", // Renamed from requirements
                     responsibilities: "",
+                    perks: "", // Added perks
                     experienceLevel: "Entry Level",
                     skills: "",
                     deadline: "",
@@ -407,23 +424,25 @@ export default function SubmitJobPage() {
                 
                 {formData.category === "fresher" && (
                   <div>
-                    <label htmlFor="batchYear" className="block text-sm font-medium text-gray-700 mb-1">
-                      Batch Year
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Batch Years (Select multiple if applicable)
                     </label>
-                    <select
-                      id="batchYear"
-                      name="batchYear"
-                      value={formData.batchYear}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">Any Batch Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
-                    </select>
+                    <div className="flex flex-wrap gap-2">
+                      {["2022", "2023", "2024", "2025", "2026", "2027"].map(year => (
+                        <div
+                          key={year}
+                          onClick={() => handleBatchYearToggle(year)}
+                          className={`px-3 py-2 rounded-md text-sm cursor-pointer transition-colors ${
+                            formData.batchYears.includes(year)
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          }`}
+                        >
+                          {year}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">Click to select/deselect multiple batch years</p>
                   </div>
                 )}
                 
@@ -467,15 +486,15 @@ export default function SubmitJobPage() {
               </div>
               
               <div>
-                <label htmlFor="requirements" className="block text-sm font-medium text-gray-700 mb-1">
-                  Preferred qualifications
+                <label htmlFor="qualifications" className="block text-sm font-medium text-gray-700 mb-1">
+                  Qualifications
                 </label>
                 <textarea
-                  id="requirements"
-                  name="requirements"
+                  id="qualifications"
+                  name="qualifications"
                   required
                   rows={4}
-                  value={formData.requirements}
+                  value={formData.qualifications}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Bachelor's degree in Computer Science
@@ -502,6 +521,24 @@ Collaborate with cross-functional teams
 Implement responsive designs"
                 ></textarea>
                 <p className="mt-1 text-sm text-gray-500">Add one responsibility per line</p>
+              </div>
+              
+              <div>
+                <label htmlFor="perks" className="block text-sm font-medium text-gray-700 mb-1">
+                  Perks
+                </label>
+                <textarea
+                  id="perks"
+                  name="perks"
+                  rows={4}
+                  value={formData.perks}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Health insurance
+Flexible working hours
+Professional development stipend"
+                ></textarea>
+                <p className="mt-1 text-sm text-gray-500">Add one perk per line</p>
               </div>
               
               <div>
