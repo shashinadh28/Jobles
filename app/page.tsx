@@ -155,7 +155,7 @@ export default function Home() {
         <section className="mb-12 md:mb-24">
           <div className="text-center mb-8 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-4 text-center">
-              Latest <span className="text-blue-600">Job Listings</span>
+              <span className="text-black dark:md:text-white">Latest</span> <span className="text-blue-600">Job Listings</span>
             </h2>
             <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
               Explore the newest opportunities added to our platform
