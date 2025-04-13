@@ -65,7 +65,7 @@ export default function Home() {
      <div>
       <LoadingAnimation />
       {/* Hero Section with Background Beams */}
-      <BackgroundBeamsWithCollision className="min-h-[90vh] from-blue-50 to-indigo-100">
+      <BackgroundBeamsWithCollision className="min-h-[90vh] from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
         <motion.div 
           className="relative z-30 max-w-5xl mx-auto text-center pt-12 md:pt-16"
           initial="hidden"

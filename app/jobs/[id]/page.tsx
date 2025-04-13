@@ -101,7 +101,7 @@ export default function JobDetailPage() {
           Back to Jobs
         </Link>
         
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-gray-200 hover:shadow-xl transition-all">
           {/* Header */}
           <div className="border-b border-gray-200 p-8 pb-6">
             <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
