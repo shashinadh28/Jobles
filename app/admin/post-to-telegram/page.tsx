@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
-import { db } from "@/lib/firestore";
+import { db } from "@/lib/firebase";
 
 export default function PostToTelegramPage() {
   const [loading, setLoading] = useState(false);

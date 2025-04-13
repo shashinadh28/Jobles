@@ -18,8 +18,8 @@ const db = admin.firestore();
 
 // Constants for Telegram API
 // IMPORTANT: Replace these with your actual values
-const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'; // Replace with your bot token
-const CHANNEL_ID = '@JoblessAlerts'; // Replace with your channel name/ID
+const BOT_TOKEN = '8174082557:AAHN0p4qLOsgAyYuMwXwga0AeT2kmX5vFR8'; // Your actual bot token
+const CHANNEL_ID = '@JoBless128'; // Your actual channel ID
 
 // Helper function to truncate text to a certain length
 const truncateText = (text, maxLength) => {
