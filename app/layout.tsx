@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/navbar";
 import FloatingButtonsWrapper from "../components/ui/floating-buttons-wrapper";
 import Script from 'next/script';
+import AnalyticsProvider from "@/components/AnalyticsProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 const oswald = Oswald({ 
@@ -38,14 +39,23 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-ZDJPNTC8ZV');
+            gtag('config', 'G-ZDJPNTC8ZV', {
+              page_path: window.location.pathname,
+              stream_id: '10521646785',
+              stream_name: 'JoBless',
+              stream_url: 'https://www.jobless.careers/',
+              send_page_view: true,
+              debug_mode: true
+            });
           `}
         </Script>
         
         <Navbar />
-        <main className="min-h-screen pt-16">
-          {children}
-        </main>
+        <AnalyticsProvider>
+          <main className="min-h-screen pt-16">
+            {children}
+          </main>
+        </AnalyticsProvider>
         <FloatingButtonsWrapper />
       </body>
     </html>

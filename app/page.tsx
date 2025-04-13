@@ -12,6 +12,7 @@ import { TypeAnimation } from 'react-type-animation';
 import LoadingAnimation from '@/components/ui/loading-animation';
 import { useForm } from 'react-hook-form';
 import { Send } from 'lucide-react';
+import { trackSearch } from "@/lib/analytics";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -44,8 +45,10 @@ export default function Home() {
     
     const timer = setTimeout(() => {
       setRefreshKey(prevKey => prevKey + 1);
-      console.log(`Refreshing search results for: "${value}"`);
-    }, 300);
+      if (value.trim().length > 2) {
+        trackSearch(value, 0);
+      }
+    }, 1000);
     
     return () => clearTimeout(timer);
   };

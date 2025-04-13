@@ -7,6 +7,7 @@ import { Briefcase, Building, MapPin, CalendarClock, Clock, ArrowLeft } from "lu
 import Image from "next/image";
 import Link from "next/link";
 import { Job } from "@/lib/firestore";
+import { trackJobView } from "@/lib/analytics";
 
 export default function JobDetailPage() {
   const params = useParams();
@@ -32,6 +33,13 @@ export default function JobDetailPage() {
         }
         
         setJob(jobData);
+        
+        // Track job view in Google Analytics
+        trackJobView(
+          jobId, 
+          jobData.title || 'Unknown Job', 
+          jobData.company || 'Unknown Company'
+        );
       } catch (err) {
         console.error('Error fetching job:', err);
         setError('Failed to load job details. The job may have been removed or doesn\'t exist.');
