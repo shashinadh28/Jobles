@@ -27,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className={`light ${oswald.variable}`}>
       <head>
         {/* Keep the default metadata here */}
+        <meta name="monetag" content="0e5032126db1f13dd19297b00c3b0791" />
       </head>
       <body className={inter.className}>
         {/* Google tag (gtag.js) */}
