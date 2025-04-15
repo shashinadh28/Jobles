@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PlusCircle, ListChecks, Edit, Home } from "lucide-react";
+import { PlusCircle, ListChecks, Edit, Home, AlertTriangle, Send } from "lucide-react";
 
 export default function AdminDashboard() {
   return (
@@ -71,6 +71,34 @@ export default function AdminDashboard() {
             </div>
             
             <div className="px-6 py-5">
+              <Link href="/admin/reported-jobs" className="group">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <AlertTriangle className="h-6 w-6 text-orange-500 group-hover:text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 group-hover:text-orange-600">Reported Jobs</h3>
+                    <p className="mt-1 text-sm text-gray-500">Review and handle jobs reported as expired by users.</p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+            
+            <div className="px-6 py-5">
+              <Link href="/admin/post-to-telegram" className="group">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <Send className="h-6 w-6 text-indigo-500 group-hover:text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 group-hover:text-indigo-600">Post to Telegram</h3>
+                    <p className="mt-1 text-sm text-gray-500">Manually post job listings to the Telegram channel.</p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+            
+            <div className="px-6 py-5">
               <Link href="/admin/edit-job" className="group">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
@@ -107,19 +135,19 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
-          <h2 className="text-lg font-medium text-blue-800 mb-2">Set Up Firebase</h2>
-          <p className="text-blue-700 mb-4">
-            For the job posting functionality to work properly, you need to configure Firebase.
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mt-8">
+          <h2 className="text-lg font-medium text-green-800 mb-2">Firebase Configuration Status</h2>
+          <p className="text-green-700 mb-4">
+            Firebase has been configured successfully! Your site is using Firebase for:
           </p>
-          <ol className="list-decimal pl-5 text-blue-700 space-y-2 mb-4">
-            <li>Create a Firebase project at <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline">firebase.google.com</a></li>
-            <li>Enable Firestore database</li>
-            <li>Update your Firebase configuration in <code className="bg-blue-100 px-2 py-1 rounded">lib/firebase.ts</code></li>
-            <li>Set up authentication for admin access</li>
-          </ol>
-          <p className="text-blue-700">
-            Once configured, job posts will be saved to Firestore and displayed on the home page in chronological order.
+          <ul className="list-disc pl-5 text-green-700 space-y-2 mb-4">
+            <li>Storing job listings in Firestore database</li>
+            <li>Telegram integration for job posting</li>
+            <li>User reporting of expired jobs</li>
+            <li>Admin management functionalities</li>
+          </ul>
+          <p className="text-green-700">
+            To enhance security, consider implementing proper authentication for the admin area before full production deployment.
           </p>
         </div>
       </div>
