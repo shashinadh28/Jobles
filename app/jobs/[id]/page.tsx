@@ -84,6 +84,8 @@ export default function JobDetailPage() {
     setReportLoading(true);
     
     try {
+      console.log("Submitting job report for:", jobId);
+      
       // Send the report to the server
       const response = await fetch('/api/report-expired-job', {
         method: 'POST',
@@ -97,19 +99,42 @@ export default function JobDetailPage() {
         }),
       });
       
+      // Get the JSON response body
+      const data = await response.json().catch(err => {
+        console.error("Error parsing response JSON:", err);
+        throw new Error("Server response could not be parsed");
+      });
+      
+      console.log("Report submission response:", data);
+      
       if (response.ok) {
         setReportSubmitted(true);
       } else {
-        throw new Error('Failed to submit report');
+        throw new Error(data.error || 'Failed to submit report');
       }
-    } catch (error) {
-      console.error('Error submitting report:', error);
-      alert('Failed to submit report. Please try again later.');
+    } catch (error: any) {
+      console.error("Error submitting report:", error);
+      let errorMessage = "Failed to submit report. Please try again later.";
+      
+      // Provide more helpful error messages
+      if (error.message.includes("fetch")) {
+        errorMessage = "Network error. Please check your connection and try again.";
+      } else if (error.message.includes("JSON")) {
+        errorMessage = "Server error. Please try again later.";
+      } else if (error.message && !error.message.includes("Failed to submit")) {
+        errorMessage = error.message;
+      }
+      
+      alert(errorMessage);
     } finally {
       setReportLoading(false);
-      setTimeout(() => {
-        setReportModalOpen(false);
-      }, 3000); // Close modal after 3 seconds
+      
+      // Only auto-close if the submission was successful
+      if (reportSubmitted) {
+        setTimeout(() => {
+          setReportModalOpen(false);
+        }, 3000); // Close modal after 3 seconds
+      }
     }
   };
 
