@@ -226,17 +226,6 @@ export default function JobDetailPage() {
           
           {/* Main Content */}
           <div className="p-8">
-            {/* Report Expired Job Button */}
-            <div className="mb-4 flex items-center justify-end">
-              <button
-                onClick={() => setReportModalOpen(true)}
-                className="text-red-600 hover:text-red-800 flex items-center text-sm font-medium"
-              >
-                <AlertTriangle className="w-4 h-4 mr-1" />
-                Report expired job
-              </button>
-            </div>
-            
             {/* Salary & Deadline & Apply Button */}
             <div className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gray-50 rounded-lg mb-8">
               {job.salary && (
@@ -337,6 +326,42 @@ export default function JobDetailPage() {
                     For application information, please contact the employer directly.
                   </p>
                 )}
+              </div>
+              
+              {/* Red-themed Report Expired Job Section */}
+              <div className="mt-6 bg-red-50 border border-red-200 rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-red-100">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                        Job Status Issue?
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col items-center sm:flex-row sm:justify-between">
+                          <div className="mb-4 sm:mb-0">
+                            <p className="text-red-700">
+                              <AlertTriangle className="inline-block w-5 h-5 mr-1 align-text-bottom" />
+                              Is this job posting expired or unavailable?
+                            </p>
+                            <p className="text-sm text-red-600 mt-1">
+                              Help us keep our listings accurate and up-to-date.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setReportModalOpen(true)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                          >
+                            Report Expired Job
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
