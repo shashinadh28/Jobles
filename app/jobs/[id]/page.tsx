@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getJobById } from "@/lib/firestore";
-import { Briefcase, Building, MapPin, CalendarClock, Clock, ArrowLeft, AlertTriangle } from "lucide-react";
+import { Briefcase, Building, MapPin, CalendarClock, Clock, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Job } from "@/lib/firestore";
@@ -16,9 +16,6 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
-  const [reportModalOpen, setReportModalOpen] = useState(false);
-  const [reportSubmitted, setReportSubmitted] = useState(false);
-  const [reportLoading, setReportLoading] = useState(false);
   
   useEffect(() => {
     const fetchJob = async () => {
@@ -58,13 +55,9 @@ export default function JobDetailPage() {
     ? job.postedAt.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
     : 'Recently';
     
-  const formattedDeadlineDate = job?.deadline instanceof Date 
+  const formattedDeadlineDate = job?.deadline instanceof Date
     ? job.deadline.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-    : job?.deadline 
-      ? typeof job.deadline === 'string' 
-        ? new Date(job.deadline).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) 
-        : String(job.deadline)
-      : 'No deadline specified';
+    : 'No deadline specified';
     
   // Function to determine if a URL is a data URL
   const isDataUrl = (url?: string) => url?.startsWith('data:');
@@ -73,69 +66,6 @@ export default function JobDetailPage() {
   const isRemoteUrl = (url?: string) => {
     if (!url) return false;
     return url.startsWith('http://') || url.startsWith('https://');
-  };
-
-  // Function to handle reporting expired job
-  const handleReportExpiredJob = async () => {
-    if (!job || !params.id) return;
-    
-    const jobId = Array.isArray(params.id) ? params.id[0] : params.id;
-    
-    setReportLoading(true);
-    
-    try {
-      console.log("Submitting job report for:", jobId);
-      
-      // Send the report to the server
-      const response = await fetch('/api/report-expired-job', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          jobId,
-          jobTitle: job.title,
-          company: job.company,
-        }),
-      });
-      
-      // Get the JSON response body
-      const data = await response.json().catch(err => {
-        console.error("Error parsing response JSON:", err);
-        throw new Error("Server response could not be parsed");
-      });
-      
-      console.log("Report submission response:", data);
-      
-      if (response.ok) {
-        setReportSubmitted(true);
-      } else {
-        throw new Error(data.error || 'Failed to submit report');
-      }
-    } catch (error: any) {
-      console.error("Error submitting report:", error);
-      let errorMessage = "Failed to submit report. Please try again later.";
-      
-      // Provide more helpful error messages
-      if (error.message.includes("fetch")) {
-        errorMessage = "Network error. Please check your connection and try again.";
-      } else if (error.message.includes("JSON")) {
-        errorMessage = "Server error. Please try again later.";
-      } else if (error.message && !error.message.includes("Failed to submit")) {
-        errorMessage = error.message;
-      }
-      
-      alert(errorMessage);
-    } finally {
-      setReportLoading(false);
-      
-      // Only auto-close if the submission was successful
-      if (reportSubmitted) {
-        setTimeout(() => {
-          setReportModalOpen(false);
-        }, 3000); // Close modal after 3 seconds
-      }
-    }
   };
 
   if (loading) {
@@ -251,7 +181,7 @@ export default function JobDetailPage() {
           
           {/* Main Content */}
           <div className="p-8">
-            {/* Salary & Deadline & Apply Button */}
+            {/* Salary & Apply Button */}
             <div className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gray-50 rounded-lg mb-8">
               {job.salary && (
                 <div className="mb-4 sm:mb-0">
@@ -352,105 +282,10 @@ export default function JobDetailPage() {
                   </p>
                 )}
               </div>
-              
-              {/* Red-themed Report Expired Job Section */}
-              <div className="mt-6 bg-red-50 border border-red-200 rounded-lg overflow-hidden">
-                <table className="min-w-full">
-                  <thead className="bg-red-100">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
-                        Job Status Issue?
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col items-center sm:flex-row sm:justify-between">
-                          <div className="mb-4 sm:mb-0">
-                            <p className="text-red-700">
-                              <AlertTriangle className="inline-block w-5 h-5 mr-1 align-text-bottom" />
-                              Is this job posting expired or unavailable?
-                            </p>
-                            <p className="text-sm text-red-600 mt-1">
-                              Help us keep our listings accurate and up-to-date.
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => setReportModalOpen(true)}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                          >
-                            Report Expired Job
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Report Expired Job Modal */}
-      {reportModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            {!reportSubmitted ? (
-              <>
-                <h3 className="text-xl font-bold mb-4 flex items-center">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
-                  Report Expired Job
-                </h3>
-                <p className="mb-6 text-gray-700">
-                  Is this job posting expired or unavailable? Reporting it will help us keep our job listings current and relevant.
-                </p>
-                <div className="flex justify-end space-x-3">
-                  <button
-                    onClick={() => setReportModalOpen(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleReportExpiredJob}
-                    disabled={reportLoading}
-                    className={`px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 ${
-                      reportLoading ? "opacity-75 cursor-not-allowed" : ""
-                    }`}
-                  >
-                    {reportLoading ? "Submitting..." : "Submit Report"}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-4">
-                <div className="mb-4 text-green-600 flex justify-center">
-                  <svg 
-                    className="w-16 h-16" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24" 
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth="2" 
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold mb-2">Thank You!</h3>
-                <p className="text-gray-700">
-                  Your report has been submitted successfully. We'll review this job posting soon.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 } 
