@@ -26,13 +26,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`light ${oswald.variable}`}>
       <head>
-        <Script 
-          src="https://kulroakonsu.net/88/tag.min.js" 
-          data-zone="142543" 
-          async 
-          data-cfasync="false"
-          strategy="beforeInteractive"
-        />
         {/* Keep the default metadata here */}
         <meta name="monetag" content="0e5032126db1f13dd19297b00c3b0791" />
       </head>
