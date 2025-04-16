@@ -28,6 +28,7 @@ export default function RootLayout({
       <head>
         {/* Keep the default metadata here */}
         <meta name="monetag" content="0e5032126db1f13dd19297b00c3b0791" />
+        <meta name="google-adsense-account" content="ca-pub-6216500614121854" />
       </head>
       <body className={inter.className}>
         {/* Google tag (gtag.js) */}
