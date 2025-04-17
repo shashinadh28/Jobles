@@ -5,6 +5,7 @@ import Navbar from "./components/navbar";
 import FloatingButtonsWrapper from "../components/ui/floating-buttons-wrapper";
 import Script from 'next/script';
 import AnalyticsProvider from "@/components/AnalyticsProvider";
+import Footer from "../components/ui/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 const oswald = Oswald({ 
@@ -64,6 +65,7 @@ export default function RootLayout({
             {children}
           </main>
         </AnalyticsProvider>
+        <Footer />
         <FloatingButtonsWrapper />
       </body>
     </html>
