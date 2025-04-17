@@ -29,6 +29,12 @@ export default function RootLayout({
         {/* Keep the default metadata here */}
         <meta name="monetag" content="0e5032126db1f13dd19297b00c3b0791" />
         <meta name="google-adsense-account" content="ca-pub-6216500614121854" />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6216500614121854"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className={inter.className}>
         {/* Google tag (gtag.js) */}
