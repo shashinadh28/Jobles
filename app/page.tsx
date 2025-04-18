@@ -317,6 +317,11 @@ export default function Home() {
           </div>
         </section>
         
+        {/* Google Ad2 - Bottom of page */}
+        <div className="my-8">
+          <GoogleAd adSlot="8888709964" className="mx-auto max-w-6xl" />
+        </div>
+        
         {/* Contact Us Section */}
         <section id="contact-us" className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
