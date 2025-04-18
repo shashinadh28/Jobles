@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from 'react';
 import { JobsList } from "@/components/jobs-list";
 import { Search } from "lucide-react";
+import EzoicAd from "@/components/ui/EzoicAd";
 
 export default function LatestJobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,51 +24,39 @@ export default function LatestJobsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <h1 className="mb-8 text-center text-4xl font-bold text-neutral-900 dark:text-white">
-        Latest Job Opportunities
-      </h1>
-      
-      <p className="mb-12 text-center text-lg text-neutral-600 dark:text-neutral-300">
-        Explore the most recent job listings added to our platform
-      </p>
-      
-      {/* Search and filters */}
-      <div className="mb-10 flex flex-col md:flex-row gap-4 max-w-4xl mx-auto">
-        <div className="relative flex-grow">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-            <Search className="w-5 h-5 text-blue-500" />
-          </div>
-          <input 
-            type="text" 
-            className="block w-full rounded-full border border-gray-300 bg-white p-4 pl-12 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" 
-            placeholder="Search jobs by title, company or skills..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">Latest Job Listings</h1>
+
+      {/* Search bar */}
+      <div className="relative max-w-2xl mx-auto mb-8">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <Search className="w-5 h-5 text-gray-400" />
         </div>
-        <select
-          className="rounded-full border border-gray-300 bg-white p-4 text-base focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-neutral-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          value={experienceLevel}
-          onChange={(e) => {
-            setExperienceLevel(e.target.value);
-            setRefreshKey(prevKey => prevKey + 1);
-          }}
-        >
-          <option value="all">All Experience Levels</option>
-          <option value="entry">Entry Level (0-2 years)</option>
-          <option value="mid">Mid Level (2-5 years)</option>
-          <option value="senior">Senior Level (5+ years)</option>
-        </select>
+        <input
+          type="text"
+          className="block w-full p-4 pl-10 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Search by job title, company, or keyword..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      {/* Ezoic Ad Top of content */}
+      <div className="my-8">
+        <EzoicAd id={103} className="mx-auto max-w-6xl" />
       </div>
       
-      <JobsList 
-        key={`latest-${refreshKey}`}
-        type="all" 
-        initialJobsPerPage={20}
+      {/* Jobs listing */}
+      <JobsList
+        type="all"
+        initialJobsPerPage={15}
         searchQuery={searchQuery}
-        experienceLevel={experienceLevel}
       />
+      
+      {/* Ezoic Ad Bottom of content */}
+      <div className="my-8">
+        <EzoicAd id={104} className="mx-auto max-w-6xl" />
+      </div>
     </div>
   );
 } 

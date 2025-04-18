@@ -27,6 +27,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`light ${oswald.variable}`}>
       <head>
+        {/* Ezoic Privacy Scripts - Must be loaded before the header script */}
+        <script src="https://cmp.gatekeeperconsent.com/min.js" data-cfasync="false"></script>
+        <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+        
+        {/* Ezoic Header Script */}
+        <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+        <script 
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.ezstandalone = window.ezstandalone || {};
+              ezstandalone.cmd = ezstandalone.cmd || [];
+            `
+          }}
+        />
         {/* Keep the default metadata here */}
         <meta name="monetag" content="0e5032126db1f13dd19297b00c3b0791" />
         <meta name="google-adsense-account" content="ca-pub-6216500614121854" />

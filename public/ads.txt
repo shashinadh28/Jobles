@@ -1,0 +1,3 @@
+# Ezoic ads.txt file
+# Replace jobless.careers with your actual domain in production
+Redirect 301 /ads.txt https://srv.adstxtmanager.com/19390/jobless.careers 

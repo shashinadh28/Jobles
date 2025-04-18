@@ -13,6 +13,7 @@ import LoadingAnimation from '@/components/ui/loading-animation';
 import { useForm } from 'react-hook-form';
 import { Send } from 'lucide-react';
 import { trackSearch } from "@/lib/analytics";
+import EzoicAd from "@/components/ui/EzoicAd";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -154,6 +155,11 @@ export default function Home() {
       </BackgroundBeamsWithCollision>
 
       <div className="container mx-auto px-4 py-12 md:py-20">
+        {/* Ezoic Ad Top */}
+        <div className="my-8">
+          <EzoicAd id={101} className="mx-auto max-w-6xl" />
+        </div>
+
         {/* Featured categories */}
         <section className="mb-12 md:mb-24">
           <div className="text-center mb-8 md:mb-16">
@@ -310,6 +316,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+        
+        {/* Ezoic Ad Bottom */}
+        <div className="my-8">
+          <EzoicAd id={102} className="mx-auto max-w-6xl" />
+        </div>
         
         {/* Contact Us Section */}
         <section id="contact-us" className="py-16 bg-gray-50">
