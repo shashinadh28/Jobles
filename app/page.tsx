@@ -13,7 +13,6 @@ import LoadingAnimation from '@/components/ui/loading-animation';
 import { useForm } from 'react-hook-form';
 import { Send } from 'lucide-react';
 import { trackSearch } from "@/lib/analytics";
-import GoogleAd from "@/components/ui/GoogleAd";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -155,11 +154,6 @@ export default function Home() {
       </BackgroundBeamsWithCollision>
 
       <div className="container mx-auto px-4 py-12 md:py-20">
-        {/* Google Ad1 */}
-        <div className="my-8">
-          <GoogleAd adSlot="8888709964" className="mx-auto max-w-6xl" />
-        </div>
-
         {/* Featured categories */}
         <section className="mb-12 md:mb-24">
           <div className="text-center mb-8 md:mb-16">
@@ -316,11 +310,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
-        {/* Google Ad2 - Bottom of page */}
-        <div className="my-8">
-          <GoogleAd adSlot="8888709964" className="mx-auto max-w-6xl" />
-        </div>
         
         {/* Contact Us Section */}
         <section id="contact-us" className="py-16 bg-gray-50">
